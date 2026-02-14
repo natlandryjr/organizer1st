@@ -1,0 +1,72 @@
+// In prisma/schema.prisma
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Event {
+  id          String    @id @default(cuid())
+  name        String
+  date        DateTime
+  description String
+  venueMap    VenueMap? // An event has one venue map
+}
+
+model VenueMap {
+  id        String    @id @default(cuid())
+  name      String
+  event     Event     @relation(fields: [eventId], references: [id])
+  eventId   String    @unique
+  sections  Section[]
+  tables    Table[]
+}
+
+model Section {
+  id          String @id @default(cuid())
+  name        String // e.g., "General Admission A"
+  rows        Int    @default(10)
+  cols        Int    @default(10)
+  venueMap    VenueMap @relation(fields: [venueMapId], references: [id])
+  venueMapId  String
+  seats       Seat[]
+}
+
+model Table {
+  id          String @id @default(cuid())
+  name        String // e.g., "Table 1"
+  seatCount   Int
+  venueMap    VenueMap @relation(fields: [venueMapId], references: [id])
+  venueMapId  String
+  seats       Seat[]
+}
+
+model Seat {
+  id          String    @id @default(cuid())
+  seatNumber  String    // e.g., "A1" for sections, "1" for tables
+  status      SeatStatus @default(AVAILABLE)
+  section     Section?  @relation(fields: [sectionId], references: [id])
+  sectionId   String?
+  table       Table?    @relation(fields: [tableId], references: [id])
+  tableId     String?
+  booking     Booking?  @relation(fields: [bookingId], references: [id])
+  bookingId   String?
+}
+
+enum SeatStatus {
+  AVAILABLE
+  LOCKED     // Temporarily held during checkout
+  BOOKED
+}
+
+model Booking {
+  id            String    @id @default(cuid())
+  attendeeName  String
+  attendeeEmail String
+  createdAt     DateTime  @default(now())
+  seats         Seat[]
+}
