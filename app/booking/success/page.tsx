@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 
 type Seat = {
@@ -32,7 +32,7 @@ function getSeatLabel(seat: Seat): string {
   return `Seat ${seat.seatNumber}`;
 }
 
-export default function BookingSuccessPage() {
+function BookingSuccessContent() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
 
@@ -125,5 +125,19 @@ export default function BookingSuccessPage() {
         Return to home
       </Link>
     </div>
+  );
+}
+
+export default function BookingSuccessPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="py-12 text-center">
+          <p className="text-zinc-400">Loading...</p>
+        </div>
+      }
+    >
+      <BookingSuccessContent />
+    </Suspense>
   );
 }
