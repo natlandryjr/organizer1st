@@ -8,6 +8,8 @@ COPY package.json package-lock.json* ./
 RUN npm ci
 
 COPY . .
+# prisma generate doesn't connect to DB but config requires DATABASE_URL
+ENV DATABASE_URL="postgresql://build:build@localhost:5432/build"
 RUN npx prisma generate
 RUN npm run build
 
