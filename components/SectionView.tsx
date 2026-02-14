@@ -35,7 +35,7 @@ export function SectionView({
   selectedSeatIds,
   onSeatSelect,
 }: SectionViewProps) {
-  const { name, rows: _rows, cols, seats } = section;
+  const { name, cols, seats } = section;
   const sortedSeats = [...seats].sort(
     (a, b) => getSeatSortKey(a.seatNumber) - getSeatSortKey(b.seatNumber)
   );

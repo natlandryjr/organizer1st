@@ -44,7 +44,6 @@ export async function POST(request: NextRequest) {
     }
 
     const quantity = seatIds.length;
-    const _totalCents = PRICE_PER_SEAT_CENTS * quantity;
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
