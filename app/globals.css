@@ -13,6 +13,18 @@ body {
   font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
 
+@layer base {
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    transition-property: color, background-color, border-color, opacity, box-shadow;
+    transition-duration: 150ms;
+    transition-timing-function: ease-in-out;
+  }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;

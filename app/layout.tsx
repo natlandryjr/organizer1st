@@ -6,11 +6,15 @@ const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
   weight: "100 900",
+  display: "swap",
+  preload: false,
 });
 const geistMono = localFont({
   src: "./fonts/GeistMonoVF.woff",
   variable: "--font-geist-mono",
   weight: "100 900",
+  display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -30,12 +34,12 @@ export default function RootLayout({
       >
         <header className="border-b border-zinc-800 bg-zinc-900/95 backdrop-blur supports-[backdrop-filter]:bg-zinc-900/80">
           <div className="mx-auto flex h-16 max-w-7xl items-center px-4 sm:px-6 lg:px-8">
-            <h1 className="text-xl font-semibold tracking-tight text-zinc-50">
+            <a href="/" className="text-xl font-semibold tracking-tight text-zinc-50 hover:text-amber-400 transition-colors">
               SweetJazz.Org Ticketing
-            </h1>
+            </a>
           </div>
         </header>
-        <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <main className="mx-auto max-w-7xl px-4 pb-32 pt-8 sm:pb-8 sm:px-6 lg:px-8">
           {children}
         </main>
       </body>

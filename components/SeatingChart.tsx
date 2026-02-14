@@ -4,12 +4,16 @@ import { useState, useCallback } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { SectionView, type Seat } from "./SectionView";
 import { TableView } from "./TableView";
+import { FloorPlanView } from "./FloorPlanView";
+import { SeatLegend } from "./SeatLegend";
 
 type Section = {
   id: string;
   name: string;
   rows: number;
   cols: number;
+  posX?: number;
+  posY?: number;
   venueMapId: string;
   seats: Seat[];
 };
@@ -18,6 +22,8 @@ type Table = {
   id: string;
   name: string;
   seatCount: number;
+  posX?: number;
+  posY?: number;
   venueMapId: string;
   seats: Seat[];
 };
@@ -26,13 +32,33 @@ type VenueMap = {
   id: string;
   name: string;
   eventId: string;
+  gridCols?: number;
+  gridRows?: number;
+  stageX?: number;
+  stageY?: number;
+  stageWidth?: number;
+  stageHeight?: number;
   sections: Section[];
   tables: Table[];
 };
 
 type SeatingChartProps = {
   venueMap: VenueMap;
+  maxSeats?: number | null;
+  bookedCount?: number;
 };
+
+function usePositionedLayout(venueMap: VenueMap): boolean {
+  const hasStage =
+    (venueMap.stageWidth ?? 0) > 0 && (venueMap.stageHeight ?? 0) > 0;
+  const hasSectionPositions = venueMap.sections.some(
+    (s) => (s.posX ?? 0) > 0 || (s.posY ?? 0) > 0
+  );
+  const hasTablePositions = venueMap.tables.some(
+    (t) => (t.posX ?? 0) > 0 || (t.posY ?? 0) > 0
+  );
+  return hasStage || hasSectionPositions || hasTablePositions;
+}
 
 const PRICE_PER_SEAT = 50;
 
@@ -48,7 +74,11 @@ function getSeatLabel(seat: Seat, venueMap: VenueMap): string {
   return seat.seatNumber;
 }
 
-export function SeatingChart({ venueMap }: SeatingChartProps) {
+export function SeatingChart({
+  venueMap,
+  maxSeats = null,
+  bookedCount = 0,
+}: SeatingChartProps) {
   const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -67,67 +97,120 @@ export function SeatingChart({ venueMap }: SeatingChartProps) {
   }, []);
 
   const totalPrice = selectedSeats.length * PRICE_PER_SEAT;
+  const useLayout = usePositionedLayout(venueMap);
+  const atCapacity =
+    maxSeats != null && maxSeats > 0 && bookedCount >= maxSeats;
+  const wouldExceedCapacity =
+    maxSeats != null &&
+    maxSeats > 0 &&
+    bookedCount + selectedSeats.length > maxSeats;
+
+  const normalizedVenueMap = {
+    ...venueMap,
+    gridCols: venueMap.gridCols ?? 24,
+    gridRows: venueMap.gridRows ?? 24,
+    stageX: venueMap.stageX ?? 0,
+    stageY: venueMap.stageY ?? 0,
+    stageWidth: venueMap.stageWidth ?? 0,
+    stageHeight: venueMap.stageHeight ?? 0,
+    sections: venueMap.sections.map((s) => ({
+      ...s,
+      posX: s.posX ?? 0,
+      posY: s.posY ?? 0,
+    })),
+    tables: venueMap.tables.map((t) => ({
+      ...t,
+      posX: t.posX ?? 0,
+      posY: t.posY ?? 0,
+    })),
+  };
 
   return (
     <div className="space-y-8">
       <h2 className="text-xl font-semibold text-zinc-50">{venueMap.name}</h2>
+      <SeatLegend />
 
-      {venueMap.sections.length > 0 && (
-        <div className="space-y-4">
-          <h3 className="text-sm font-medium uppercase tracking-wider text-zinc-500">
-            Sections
-          </h3>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {venueMap.sections.map((section) => (
-              <SectionView
-                key={section.id}
-                section={section}
-                selectedSeatIds={selectedSeatIds}
-                onSeatSelect={handleSeatSelect}
-              />
-            ))}
-          </div>
-        </div>
+      {useLayout ? (
+        <FloorPlanView
+          venueMap={normalizedVenueMap}
+          selectedSeatIds={selectedSeatIds}
+          onSeatSelect={handleSeatSelect}
+        />
+      ) : (
+        <>
+          {venueMap.sections.length > 0 && (
+            <div className="space-y-4">
+              <h3 className="text-sm font-medium uppercase tracking-wider text-zinc-500">
+                Sections
+              </h3>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {venueMap.sections.map((section) => (
+                  <SectionView
+                    key={section.id}
+                    section={section}
+                    selectedSeatIds={selectedSeatIds}
+                    onSeatSelect={handleSeatSelect}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {venueMap.tables.length > 0 && (
+            <div className="space-y-4">
+              <h3 className="text-sm font-medium uppercase tracking-wider text-zinc-500">
+                Tables
+              </h3>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {venueMap.tables.map((table) => (
+                  <TableView
+                    key={table.id}
+                    table={table}
+                    selectedSeatIds={selectedSeatIds}
+                    onSeatSelect={handleSeatSelect}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        </>
       )}
 
-      {venueMap.tables.length > 0 && (
-        <div className="space-y-4">
-          <h3 className="text-sm font-medium uppercase tracking-wider text-zinc-500">
-            Tables
-          </h3>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {venueMap.tables.map((table) => (
-              <TableView
-                key={table.id}
-                table={table}
-                selectedSeatIds={selectedSeatIds}
-                onSeatSelect={handleSeatSelect}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
-      <div className="sticky bottom-0 rounded-lg border border-zinc-800 bg-zinc-900 p-6">
-        <h3 className="mb-3 text-lg font-semibold text-zinc-50">
+      <div className="sticky bottom-0 z-10 rounded-lg border border-zinc-800 bg-zinc-900 p-6 shadow-[0_-4px_20px_rgba(0,0,0,0.5)]">
+        <h3 className="mb-3 flex items-center gap-2 text-lg font-semibold text-zinc-50">
           Checkout
+          {selectedSeats.length > 0 && (
+            <span className="rounded-full bg-amber-500 px-2 py-0.5 text-xs font-bold text-zinc-950">
+              {selectedSeats.length}
+            </span>
+          )}
         </h3>
         {selectedSeats.length > 0 ? (
           <>
             <ul className="mb-4 space-y-1 text-sm text-zinc-300">
               {selectedSeats.map((seat) => (
-                <li key={seat.id}>
-                  {getSeatLabel(seat, venueMap)}
+                <li key={seat.id} className="flex items-center justify-between">
+                  <span>{getSeatLabel(seat, venueMap)}</span>
+                  <button
+                    type="button"
+                    onClick={() => handleSeatSelect(seat)}
+                    className="ml-2 text-zinc-500 hover:text-red-400"
+                    aria-label={`Remove ${getSeatLabel(seat, venueMap)}`}
+                  >
+                    &times;
+                  </button>
                 </li>
               ))}
             </ul>
             <p className="mb-4 text-zinc-400">
               Total:{" "}
-              <span className="font-semibold text-zinc-50">
+              <span className="text-2xl font-bold text-zinc-50">
                 ${totalPrice.toFixed(2)}
               </span>{" "}
-              ({selectedSeats.length} seat
-              {selectedSeats.length !== 1 ? "s" : ""} × ${PRICE_PER_SEAT})
+              <span className="text-sm">
+                ({selectedSeats.length} seat
+                {selectedSeats.length !== 1 ? "s" : ""} &times; ${PRICE_PER_SEAT})
+              </span>
             </p>
           </>
         ) : (
@@ -171,8 +254,20 @@ export function SeatingChart({ venueMap }: SeatingChartProps) {
             </div>
           </div>
         )}
+        {atCapacity && (
+          <p className="mb-4 text-sm font-medium text-amber-400">
+            This event is sold out.
+          </p>
+        )}
+        {wouldExceedCapacity && !atCapacity && (
+          <p className="mb-4 text-sm text-amber-400">
+            Only {maxSeats! - bookedCount} seat
+            {maxSeats! - bookedCount !== 1 ? "s" : ""} remaining. Reduce your
+            selection.
+          </p>
+        )}
         {error && (
-          <p className="mb-4 text-sm text-red-400">{error}</p>
+          <div className="mb-4 rounded-lg border border-red-800/50 bg-red-900/20 p-3 text-sm text-red-400">{error}</div>
         )}
         <button
           type="button"
@@ -180,7 +275,9 @@ export function SeatingChart({ venueMap }: SeatingChartProps) {
             selectedSeats.length === 0 ||
             !name.trim() ||
             !email.trim() ||
-            isLoading
+            isLoading ||
+            atCapacity ||
+            wouldExceedCapacity
           }
           onClick={async () => {
             if (selectedSeats.length === 0 || !name.trim() || !email.trim())

@@ -7,6 +7,8 @@ export type Seat = {
   sectionId: string | null;
   tableId: string | null;
   bookingId: string | null;
+  holdId?: string | null;
+  hold?: { id: string; label: string } | null;
 };
 
 type Section = {
@@ -15,6 +17,7 @@ type Section = {
   rows: number;
   cols: number;
   venueMapId: string;
+  color?: string | null;
   seats: Seat[];
 };
 
@@ -22,6 +25,7 @@ type SectionViewProps = {
   section: Section;
   selectedSeatIds: Set<string>;
   onSeatSelect: (seat: Seat) => void;
+  allowHeldSelection?: boolean;
 };
 
 function getSeatSortKey(seatNumber: string): number {
@@ -34,17 +38,30 @@ export function SectionView({
   section,
   selectedSeatIds,
   onSeatSelect,
+  allowHeldSelection = false,
 }: SectionViewProps) {
-  const { name, cols, seats } = section;
+  const { name, cols, seats, color } = section;
+  const sectionColor = color && /^#[0-9A-Fa-f]{6}$/.test(color) ? color : "#4b5563";
   const sortedSeats = [...seats].sort(
     (a, b) => getSeatSortKey(a.seatNumber) - getSeatSortKey(b.seatNumber)
   );
 
   return (
-    <div className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-4">
-      <h3 className="mb-3 text-sm font-medium text-zinc-300">{name}</h3>
+    <div
+      className="rounded-lg border p-4"
+      style={{
+        backgroundColor: `${sectionColor}20`,
+        borderColor: `${sectionColor}60`,
+      }}
+    >
+      <h3
+        className="mb-3 text-sm font-medium"
+        style={{ color: sectionColor }}
+      >
+        {name}
+      </h3>
       <div
-        className="grid gap-1"
+        className="grid gap-1.5"
         style={{
           gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
         }}
@@ -52,8 +69,14 @@ export function SectionView({
         {sortedSeats.map((seat) => {
           const isBooked = seat.status === "BOOKED";
           const isLocked = seat.status === "LOCKED";
+          const isHeld = seat.status === "HELD";
           const isAvailable = seat.status === "AVAILABLE";
           const isSelected = selectedSeatIds.has(seat.id);
+          const canToggle =
+            (isAvailable || isSelected || (allowHeldSelection && isHeld)) &&
+            !isBooked &&
+            !isLocked &&
+            (allowHeldSelection || !isHeld);
 
           const getButtonClasses = () => {
             if (isBooked) {
@@ -62,19 +85,28 @@ export function SectionView({
             if (isLocked) {
               return "cursor-not-allowed bg-zinc-600 text-zinc-400";
             }
+            if (isHeld) {
+              return "cursor-not-allowed bg-amber-600/80 text-amber-100";
+            }
             if (isSelected) {
               return "bg-blue-500 text-white hover:bg-blue-600";
             }
-            return "bg-gray-500 text-white hover:bg-gray-400";
+            return "text-white hover:opacity-90";
           };
+
+          const availableBg =
+            isAvailable && !isSelected ? sectionColor : undefined;
+          const holdLabel = seat.hold?.label;
 
           return (
             <button
               key={seat.id}
               type="button"
-              onClick={() => isAvailable && onSeatSelect(seat)}
-              disabled={isBooked || isLocked}
-              className={`flex h-8 w-8 items-center justify-center rounded text-xs font-medium transition-colors ${getButtonClasses()}`}
+              onClick={() => canToggle && onSeatSelect(seat)}
+              disabled={isBooked || isLocked || (!allowHeldSelection && isHeld)}
+              title={isHeld && holdLabel ? `Held for: ${holdLabel}` : undefined}
+              className={`flex h-11 w-11 sm:h-8 sm:w-8 items-center justify-center rounded text-xs font-medium transition-colors ${getButtonClasses()}`}
+              style={availableBg ? { backgroundColor: availableBg } : undefined}
             >
               {seat.seatNumber}
             </button>

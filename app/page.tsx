@@ -11,6 +11,7 @@ export default async function Home() {
       name: true,
       date: true,
       description: true,
+      flyerUrl: true,
     },
   });
 
@@ -29,7 +30,7 @@ export default async function Home() {
         <div className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-8 text-center">
           <p className="text-zinc-400">No events yet.</p>
           <p className="mt-2 text-sm text-zinc-500">
-            Events can be created via the admin API.
+            Check back soon for upcoming events!
           </p>
         </div>
       ) : (
@@ -38,8 +39,18 @@ export default async function Home() {
             <li key={event.id}>
               <Link
                 href={`/events/${event.id}`}
-                className="block rounded-lg border border-zinc-800 bg-zinc-900/50 p-5 transition-colors hover:border-zinc-700 hover:bg-zinc-900"
+                className="block overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900/50 transition-colors hover:border-zinc-700 hover:bg-zinc-900"
               >
+                {event.flyerUrl && (
+                  <div className="aspect-video w-full overflow-hidden bg-zinc-800">
+                    <img
+                      src={event.flyerUrl}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                )}
+                <div className="p-5">
                 <h3 className="font-medium text-zinc-50">{event.name}</h3>
                 <p className="mt-1 text-sm text-zinc-400">
                   {(event.date instanceof Date
@@ -51,13 +62,22 @@ export default async function Home() {
                     month: "long",
                     day: "numeric",
                   })}
+                  {" at "}
+                  {(event.date instanceof Date
+                    ? event.date
+                    : new Date(event.date)
+                  ).toLocaleTimeString("en-US", {
+                    hour: "numeric",
+                    minute: "2-digit",
+                  })}
                 </p>
                 <p className="mt-2 line-clamp-2 text-sm text-zinc-500">
                   {event.description}
                 </p>
-                <span className="mt-3 inline-block text-sm font-medium text-blue-400 hover:text-blue-300">
-                  View seats →
+                <span className="mt-3 inline-block rounded-full bg-amber-500/15 px-3 py-1 text-sm font-semibold text-amber-400">
+                  Get Tickets
                 </span>
+                </div>
               </Link>
             </li>
           ))}

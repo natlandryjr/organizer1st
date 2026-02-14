@@ -101,15 +101,24 @@ function BookingSuccessContent() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-zinc-50">
-        Thank you for your booking, {booking.attendeeName}!
-      </h1>
+      <div className="flex items-center gap-3">
+        <svg className="h-10 w-10 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+          <circle cx={12} cy={12} r={10} />
+          <path d="m9 12 2 2 4-4" />
+        </svg>
+        <h1 className="text-2xl font-bold text-zinc-50">
+          Booking confirmed!
+        </h1>
+      </div>
       <p className="text-zinc-400">
-        Your seats have been confirmed. A confirmation has been sent to{" "}
+        Thank you, <span className="text-zinc-200">{booking.attendeeName}</span>! A confirmation has been sent to{" "}
         <span className="text-zinc-300">{booking.attendeeEmail}</span>.
       </p>
-      <div>
-        <h2 className="mb-2 text-lg font-semibold text-zinc-300">
+      <div className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-4 space-y-3">
+        <p className="text-sm text-zinc-500">
+          Booking reference: <span className="font-mono text-zinc-300">#{booking.id.slice(-8)}</span>
+        </p>
+        <h2 className="text-lg font-semibold text-zinc-300">
           Confirmed seats
         </h2>
         <ul className="space-y-1 text-zinc-300">
@@ -118,11 +127,19 @@ function BookingSuccessContent() {
           ))}
         </ul>
       </div>
+      <div className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-4">
+        <h3 className="mb-2 text-sm font-medium text-zinc-300">What&apos;s next?</h3>
+        <ul className="space-y-1 text-sm text-zinc-500">
+          <li>Check your email for your booking confirmation</li>
+          <li>Arrive at least 15 minutes before the event</li>
+          <li>Present your confirmation email at the door</li>
+        </ul>
+      </div>
       <Link
         href="/"
         className="inline-block rounded-lg bg-amber-500 px-4 py-2 font-semibold text-zinc-950 transition-colors hover:bg-amber-400"
       >
-        Return to home
+        Browse more events
       </Link>
     </div>
   );

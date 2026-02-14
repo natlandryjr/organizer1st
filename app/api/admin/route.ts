@@ -5,15 +5,31 @@ type SectionConfig = {
   name: string;
   rows: number;
   cols: number;
+  posX?: number;
+  posY?: number;
+  color?: string | null;
 };
 
 type TableConfig = {
   name: string;
   seatCount: number;
+  posX?: number;
+  posY?: number;
+  color?: string | null;
+};
+
+type StageConfig = {
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
 };
 
 type SeatingConfig = {
   mapName: string;
+  gridCols?: number;
+  gridRows?: number;
+  stage?: StageConfig;
   sections: SectionConfig[];
   tables: TableConfig[];
 };
@@ -22,6 +38,8 @@ type CreateEventPayload = {
   eventName: string;
   eventDate: string;
   eventDescription: string;
+  maxSeats?: number | null;
+  flyerUrl?: string | null;
   seatingConfig: SeatingConfig;
 };
 
@@ -40,7 +58,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as CreateEventPayload;
 
-    const { eventName, eventDate, eventDescription, seatingConfig } = body;
+    const { eventName, eventDate, eventDescription, maxSeats, flyerUrl, seatingConfig } = body;
 
     if (!eventName || !eventDate || !eventDescription || !seatingConfig) {
       return NextResponse.json(
@@ -51,7 +69,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { mapName, sections = [], tables = [] } = seatingConfig;
+    const {
+      mapName,
+      gridCols = 24,
+      gridRows = 24,
+      stage = {},
+      sections = [],
+      tables = [],
+    } = seatingConfig;
 
     if (!mapName) {
       return NextResponse.json(
@@ -74,6 +99,8 @@ export async function POST(request: NextRequest) {
           name: eventName,
           date: eventDateParsed,
           description: eventDescription,
+          maxSeats: maxSeats != null && maxSeats > 0 ? maxSeats : null,
+          flyerUrl: flyerUrl && flyerUrl.trim() ? flyerUrl.trim() : null,
         },
       });
 
@@ -81,17 +108,26 @@ export async function POST(request: NextRequest) {
         data: {
           name: mapName,
           eventId: event.id,
+          gridCols,
+          gridRows,
+          stageX: stage.x ?? 0,
+          stageY: stage.y ?? 0,
+          stageWidth: stage.width ?? 0,
+          stageHeight: stage.height ?? 0,
         },
       });
 
       for (const sectionConfig of sections) {
-        const { name, rows = 10, cols = 10 } = sectionConfig;
+        const { name, rows = 10, cols = 10, posX = 0, posY = 0, color } = sectionConfig;
 
         const section = await tx.section.create({
           data: {
             name,
             rows,
             cols,
+            posX,
+            posY,
+            color: color && /^#[0-9A-Fa-f]{6}$/.test(color) ? color : null,
             venueMapId: venueMap.id,
           },
         });
@@ -106,12 +142,15 @@ export async function POST(request: NextRequest) {
       }
 
       for (const tableConfig of tables) {
-        const { name, seatCount } = tableConfig;
+        const { name, seatCount, posX = 0, posY = 0, color } = tableConfig;
 
         const table = await tx.table.create({
           data: {
             name,
             seatCount,
+            posX,
+            posY,
+            color: color && /^#[0-9A-Fa-f]{6}$/.test(color) ? color : null,
             venueMapId: venueMap.id,
           },
         });

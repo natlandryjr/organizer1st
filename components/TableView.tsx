@@ -7,6 +7,7 @@ type Table = {
   name: string;
   seatCount: number;
   venueMapId: string;
+  color?: string | null;
   seats: Seat[];
 };
 
@@ -14,18 +15,22 @@ type TableViewProps = {
   table: Table;
   selectedSeatIds: Set<string>;
   onSeatSelect: (seat: Seat) => void;
+  allowHeldSelection?: boolean;
 };
 
 export function TableView({
   table,
   selectedSeatIds,
   onSeatSelect,
+  allowHeldSelection = false,
 }: TableViewProps) {
-  const { name, seats } = table;
+  const { name, seats, color } = table;
+  const tableColor = color && /^#[0-9A-Fa-f]{6}$/.test(color) ? color : "#4b5563";
 
   const getSeatButtonClasses = (seat: (typeof seats)[0]) => {
     const isBooked = seat.status === "BOOKED";
     const isLocked = seat.status === "LOCKED";
+    const isHeld = seat.status === "HELD";
     const isSelected = selectedSeatIds.has(seat.id);
 
     if (isBooked) {
@@ -34,16 +39,51 @@ export function TableView({
     if (isLocked) {
       return "cursor-not-allowed bg-zinc-600 text-zinc-400";
     }
+    if (isHeld) {
+      return "cursor-not-allowed bg-amber-600/80 text-amber-100";
+    }
     if (isSelected) {
       return "bg-blue-500 text-white hover:bg-blue-600";
     }
-    return "bg-gray-500 text-white hover:bg-gray-400";
+    return "text-white hover:opacity-90";
+  };
+
+  const getSeatStyle = (seat: (typeof seats)[0]) => {
+    const isBooked = seat.status === "BOOKED";
+    const isLocked = seat.status === "LOCKED";
+    const isHeld = seat.status === "HELD";
+    const isSelected = selectedSeatIds.has(seat.id);
+    if (isBooked || isLocked || isHeld || isSelected) return undefined;
+    return { backgroundColor: tableColor };
+  };
+
+  const canToggleSeat = (seat: (typeof seats)[0]) => {
+    const isAvailable = seat.status === "AVAILABLE";
+    const isSelected = selectedSeatIds.has(seat.id);
+    const isBooked = seat.status === "BOOKED";
+    const isLocked = seat.status === "LOCKED";
+    const isHeld = seat.status === "HELD";
+    return (
+      (isAvailable || isSelected || (allowHeldSelection && isHeld)) &&
+      !isBooked &&
+      !isLocked &&
+      (allowHeldSelection || !isHeld)
+    );
   };
 
   return (
-    <div className="relative flex h-44 w-44 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900/50 p-4">
+    <div
+      className="relative flex h-52 w-52 sm:h-44 sm:w-44 items-center justify-center rounded-lg border p-4"
+      style={{
+        backgroundColor: `${tableColor}20`,
+        borderColor: `${tableColor}60`,
+      }}
+    >
       {/* Central table circle */}
-      <div className="absolute flex h-20 w-20 items-center justify-center rounded-full bg-zinc-600 text-center text-sm font-medium text-zinc-200">
+      <div
+        className="absolute flex h-20 w-20 items-center justify-center rounded-full text-center text-sm font-medium text-white"
+        style={{ backgroundColor: tableColor }}
+      >
         {name}
       </div>
 
@@ -51,9 +91,12 @@ export function TableView({
       {seats.map((seat, i) => {
         const isBooked = seat.status === "BOOKED";
         const isLocked = seat.status === "LOCKED";
+        const isHeld = seat.status === "HELD";
         const isAvailable = seat.status === "AVAILABLE";
+        const canToggle = canToggleSeat(seat);
+        const holdLabel = seat.hold?.label;
         const angle = (i / seats.length) * 2 * Math.PI - Math.PI / 2;
-        const radius = 56;
+        const radius = 64;
         const x = Math.cos(angle) * radius;
         const y = Math.sin(angle) * radius;
 
@@ -67,9 +110,11 @@ export function TableView({
           >
             <button
               type="button"
-              onClick={() => isAvailable && onSeatSelect(seat)}
-              disabled={isBooked || isLocked}
-              className={`flex h-10 w-10 items-center justify-center rounded-full text-xs font-medium transition-colors ${getSeatButtonClasses(seat)}`}
+              onClick={() => canToggle && onSeatSelect(seat)}
+              disabled={isBooked || isLocked || (!allowHeldSelection && isHeld)}
+              title={isHeld && holdLabel ? `Held for: ${holdLabel}` : undefined}
+              className={`flex h-12 w-12 sm:h-10 sm:w-10 items-center justify-center rounded-full text-xs font-medium transition-colors ${getSeatButtonClasses(seat)}`}
+              style={getSeatStyle(seat)}
             >
               {seat.seatNumber}
             </button>

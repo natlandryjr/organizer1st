@@ -14,32 +14,46 @@ model Event {
   name        String
   date        DateTime
   description String
+  maxSeats    Int?      // Maximum capacity; null = no limit
+  flyerUrl    String?   // Event flyer/poster image URL
   venueMap    VenueMap? // An event has one venue map
 }
 
 model VenueMap {
-  id        String    @id @default(cuid())
-  name      String
-  event     Event     @relation(fields: [eventId], references: [id])
-  eventId   String    @unique
-  sections  Section[]
-  tables    Table[]
+  id           String    @id @default(cuid())
+  name         String
+  event        Event     @relation(fields: [eventId], references: [id])
+  eventId      String    @unique
+  sections     Section[]
+  tables       Table[]
+  gridCols     Int       @default(24)
+  gridRows     Int       @default(24)
+  stageX       Int       @default(0)
+  stageY       Int       @default(0)
+  stageWidth   Int       @default(0)
+  stageHeight  Int       @default(0)
 }
 
 model Section {
-  id          String @id @default(cuid())
-  name        String // e.g., "General Admission A"
-  rows        Int    @default(10)
-  cols        Int    @default(10)
+  id          String   @id @default(cuid())
+  name        String
+  rows        Int      @default(10)
+  cols        Int      @default(10)
+  posX        Int      @default(0)
+  posY        Int      @default(0)
+  color       String?  // Hex color e.g. #4F46E5
   venueMap    VenueMap @relation(fields: [venueMapId], references: [id])
   venueMapId  String
   seats       Seat[]
 }
 
 model Table {
-  id          String @id @default(cuid())
-  name        String // e.g., "Table 1"
+  id          String   @id @default(cuid())
+  name        String
   seatCount   Int
+  posX        Int      @default(0)
+  posY        Int      @default(0)
+  color       String?  // Hex color e.g. #4F46E5
   venueMap    VenueMap @relation(fields: [venueMapId], references: [id])
   venueMapId  String
   seats       Seat[]
@@ -55,12 +69,22 @@ model Seat {
   tableId     String?
   booking     Booking?  @relation(fields: [bookingId], references: [id])
   bookingId   String?
+  hold        Hold?     @relation(fields: [holdId], references: [id])
+  holdId      String?
 }
 
 enum SeatStatus {
   AVAILABLE
   LOCKED     // Temporarily held during checkout
   BOOKED
+  HELD       // Admin hold with label
+}
+
+model Hold {
+  id        String   @id @default(cuid())
+  label     String   // Who the hold is for, e.g. "VIP", "Smith family"
+  createdAt DateTime @default(now())
+  seats     Seat[]
 }
 
 model Booking {
