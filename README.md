@@ -2,7 +2,13 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+**Local development** requires PostgreSQL. Use a local Postgres, [Docker](https://hub.docker.com/_/postgres), or a free cloud DB ([Neon](https://neon.tech), [Supabase](https://supabase.com)). Set `DATABASE_URL` in `.env` to your Postgres connection string, then run migrations:
+
+```bash
+npx prisma migrate dev
+```
+
+Then start the dev server:
 
 ```bash
 npm run dev
@@ -29,8 +35,32 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## Deploy on Fly.io
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. **Install Fly CLI** and sign in: [fly.io/docs/hands-on/install-flyctl](https://fly.io/docs/hands-on/install-flyctl/)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+2. **Create a Postgres database:**
+   ```bash
+   fly postgres create
+   ```
+   Choose a name, region, and the "Development" preset for a single machine.
+
+3. **Launch the app and attach Postgres** (creates app + `DATABASE_URL` secret):
+   ```bash
+   fly launch --no-deploy
+   fly postgres attach <your-postgres-app-name>
+   ```
+
+4. **Set secrets:**
+   ```bash
+   fly secrets set STRIPE_SECRET_KEY=sk_live_...
+   fly secrets set NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_...
+   fly secrets set NEXT_PUBLIC_APP_URL=https://sweetjazz-ticketing.fly.dev
+   ```
+
+5. **Deploy:**
+   ```bash
+   fly deploy
+   ```
+
+Migrations run automatically on each deploy via `release_command`. The app will be at `https://sweetjazz-ticketing.fly.dev` (or your chosen app name).

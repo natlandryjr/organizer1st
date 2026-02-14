@@ -1,0 +1,31 @@
+# fly.toml - Fly.io app config for SweetJazz Ticketing
+# Create Postgres first: fly postgres create
+# Attach it: fly postgres attach <postgres-app-name>
+# Set secrets: fly secrets set STRIPE_SECRET_KEY=sk_... NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_... NEXT_PUBLIC_APP_URL=https://your-app.fly.dev
+
+app = "sweetjazz-ticketing"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "3000"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+  [http_service.concurrency]
+    type = "requests"
+    soft_limit = 200
+    hard_limit = 250
+  [[http_service.checks]]
+    grace_period = "10s"
+    interval = "30s"
+    path = "/"
+    timeout = "5s"
+
+[deploy]
+  release_command = "npx prisma migrate deploy"
