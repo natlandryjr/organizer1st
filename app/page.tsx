@@ -3,11 +3,8 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-const SAMPLE_EVENT_NAME = "Sample Event";
-
 export default async function Home() {
   let events: { id: string; name: string; date: Date; description: string; flyerUrl: string | null }[] = [];
-  let sampleEventId: string | null = null;
   try {
     events = await prisma.event.findMany({
       where: { status: "PUBLISHED" },
@@ -20,8 +17,6 @@ export default async function Home() {
         flyerUrl: true,
       },
     });
-    const sample = events.find((e) => e.name === SAMPLE_EVENT_NAME);
-    sampleEventId = sample?.id ?? null;
   } catch (err) {
     console.error("Home page events fetch:", err);
   }
@@ -48,7 +43,7 @@ export default async function Home() {
               Create Your First Event
             </Link>
             <Link
-              href={sampleEventId ? `/events/${sampleEventId}` : events.length > 0 ? `/events/${events[0].id}` : "#how-it-works"}
+              href="/demo"
               className="w-full rounded-xl border border-zinc-600 px-8 py-4 text-base font-semibold text-zinc-200 transition-colors hover:border-zinc-500 hover:bg-zinc-800/50 sm:w-auto"
             >
               See a Demo
