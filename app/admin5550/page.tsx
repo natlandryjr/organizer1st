@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { LayoutDesigner } from "@/components/LayoutDesigner";
+import { stageDimensionsForCapacity } from "@/lib/stage-utils";
 
 type ExistingEvent = {
   id: string;
@@ -57,11 +58,12 @@ function AdminPageContent() {
   const [mapName, setMapName] = useState("");
   const [gridCols, setGridCols] = useState(24);
   const [gridRows, setGridRows] = useState(48);
-  const [stage, setStage] = useState<StageConfig>({ x: 0, y: 0, width: 20, height: 20 });
-  const SECTION_ZONE_START = 28; // stage (20) + table zone (8)
-  const TABLE_ZONE_START = 20;
+  const INITIAL_STAGE = stageDimensionsForCapacity(50, 24, 48);
+  const [stage, setStage] = useState<StageConfig>({ x: 0, y: 0, width: INITIAL_STAGE.width, height: INITIAL_STAGE.height });
+  const SECTION_ZONE_START = stage.height + 3 + 8;
+  const TABLE_ZONE_START = stage.height + 3;
   const [sections, setSections] = useState<SectionConfig[]>([
-    { name: "General Admission", rows: 5, cols: 10, posX: 0, posY: SECTION_ZONE_START, color: "#6366f1" },
+    { name: "General Admission", rows: 5, cols: 10, posX: 0, posY: INITIAL_STAGE.height + 11, color: "#6366f1" },
   ]);
   const [tables, setTables] = useState<TableConfig[]>([]);
   const [loading, setLoading] = useState(false);
@@ -489,7 +491,7 @@ function AdminPageContent() {
           <div className="rounded-lg border border-zinc-700 bg-zinc-900/30 p-4">
             <h4 className="mb-3 text-sm font-medium text-zinc-400">Stage</h4>
             <p className="mb-3 text-xs text-zinc-500">
-              Stage is fixed at the top. Default 20×20 (grid units).
+              Stage is fixed at the top. Sizes proportionally to capacity (larger events = larger stage).
             </p>
             <div className="flex flex-wrap gap-4">
               <div>

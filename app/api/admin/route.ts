@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { DEFAULT_ORGANIZATION_ID } from "@/lib/constants";
+import { stageDimensionsForCapacity } from "@/lib/stage-utils";
 
 type SectionConfig = {
   name: string;
@@ -81,6 +82,15 @@ export async function POST(request: NextRequest) {
       tables = [],
     } = seatingConfig;
 
+    // Compute total seats for proportional stage
+    const totalSeats =
+      sections.reduce((sum, s) => sum + (s.rows ?? 10) * (s.cols ?? 10), 0) +
+      tables.reduce((sum, t) => sum + (t.seatCount ?? 0), 0);
+    const proportionalStage =
+      totalSeats > 0
+        ? stageDimensionsForCapacity(totalSeats, gridCols, gridRowsInput)
+        : { width: 0, height: 0 };
+
     if (!mapName) {
       return NextResponse.json(
         { error: "seatingConfig.mapName is required" },
@@ -97,7 +107,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Auto-layout: compute initial positions for sections/tables if not provided
-    const stageH = stage.height ?? 0;
+    const stageH = stage.height ?? proportionalStage.height ?? 0;
     const TABLE_STAGE_MARGIN = 3;
     const TABLE_ZONE_ROWS = 8;
     const sectionStartY = stageH + TABLE_STAGE_MARGIN + TABLE_ZONE_ROWS;
@@ -153,8 +163,8 @@ export async function POST(request: NextRequest) {
           gridRows,
           stageX: stage.x ?? 0,
           stageY: stage.y ?? 0,
-          stageWidth: stage.width ?? 0,
-          stageHeight: stage.height ?? 0,
+          stageWidth: stage.width ?? proportionalStage.width ?? 0,
+          stageHeight: stage.height ?? proportionalStage.height ?? 0,
         },
       });
 

@@ -1,7 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import { hashPassword } from "../lib/auth";
+import { stageDimensionsForCapacity } from "../lib/stage-utils";
 
 const prisma = new PrismaClient();
+
+const TOTAL_SEATS = 200;
 
 const DEMO_EMAIL = "demo@organizer1st.com";
 const DEMO_PASSWORD = "Demo1234!";
@@ -54,7 +57,7 @@ async function main() {
     console.log(`Demo user already exists: ${DEMO_EMAIL}`);
   }
 
-  // Create sample event if not exists
+  // Create sample event if not exists (200 seats: 10 tables×4 + 2 sections×80)
   const existingEvent = await prisma.event.findFirst({
     where: {
       organizationId: org.id,
@@ -69,6 +72,10 @@ async function main() {
     const eventEndDate = new Date(eventDate);
     eventEndDate.setHours(22, 0, 0, 0); // 10 PM
 
+    const { width: stageWidth, height: stageHeight } = stageDimensionsForCapacity(TOTAL_SEATS, 24, 56);
+    const TABLE_ZONE_START = stageHeight + 3;
+    const SECTION_START_Y = TABLE_ZONE_START + 8;
+
     await prisma.$transaction(async (tx) => {
       const event = await tx.event.create({
         data: {
@@ -77,7 +84,7 @@ async function main() {
           endDate: eventEndDate,
           description:
             "Try this sample event! Book seats, explore the seating chart, and see how Organizer1st works. Log in as the demo organizer to edit events, manage attendees, and more.",
-          maxSeats: 150,
+          maxSeats: TOTAL_SEATS,
           status: "PUBLISHED",
           organizationId: org!.id,
         },
@@ -88,11 +95,11 @@ async function main() {
           name: "Main Hall",
           eventId: event.id,
           gridCols: 24,
-          gridRows: 48,
+          gridRows: 56,
           stageX: 0,
           stageY: 0,
-          stageWidth: 20,
-          stageHeight: 20,
+          stageWidth,
+          stageHeight,
         },
       });
 
@@ -105,49 +112,64 @@ async function main() {
         },
       });
 
-      // General Admission section
-      const section = await tx.section.create({
-        data: {
-          name: "General Admission",
-          rows: 5,
-          cols: 10,
-          posX: 0,
-          posY: 28,
-          color: "#6366f1",
-          venueMapId: venueMap.id,
-          ticketTypeId: ticketType.id,
-        },
-      });
+      // 2 sections of 80 seats each (8 rows × 10 cols = 80)
+      const sectionConfigs = [
+        { name: "Section A", rows: 8, cols: 10, posX: 0, posY: SECTION_START_Y, color: "#6366f1" },
+        { name: "Section B", rows: 8, cols: 10, posX: 0, posY: SECTION_START_Y + 9, color: "#22c55e" },
+      ];
 
-      const seatNumbers = generateSectionSeatNumbers(5, 10);
-      await tx.seat.createMany({
-        data: seatNumbers.map((seatNumber) => ({
-          seatNumber,
-          sectionId: section.id,
-        })),
-      });
+      for (const sc of sectionConfigs) {
+        const section = await tx.section.create({
+          data: {
+            name: sc.name,
+            rows: sc.rows,
+            cols: sc.cols,
+            posX: sc.posX,
+            posY: sc.posY,
+            color: sc.color,
+            venueMapId: venueMap.id,
+            ticketTypeId: ticketType.id,
+          },
+        });
+        const seatNumbers = generateSectionSeatNumbers(sc.rows, sc.cols);
+        await tx.seat.createMany({
+          data: seatNumbers.map((seatNumber) => ({
+            seatNumber,
+            sectionId: section.id,
+          })),
+        });
+      }
 
-      // VIP table
-      const table = await tx.table.create({
-        data: {
-          name: "VIP Table 1",
-          seatCount: 6,
-          posX: 2,
-          posY: 22,
-          color: "#f59e0b",
-          venueMapId: venueMap.id,
-          ticketTypeId: ticketType.id,
-        },
-      });
+      // 10 tables of 4 seats each (40 seats total)
+      const tableY1 = TABLE_ZONE_START + 1;
+      const tableY2 = TABLE_ZONE_START + 4;
+      const tablePositions = [
+        { x: 2, y: tableY1 }, { x: 6, y: tableY1 }, { x: 10, y: tableY1 }, { x: 14, y: tableY1 }, { x: 18, y: tableY1 },
+        { x: 2, y: tableY2 }, { x: 6, y: tableY2 }, { x: 10, y: tableY2 }, { x: 14, y: tableY2 }, { x: 18, y: tableY2 },
+      ];
 
-      await tx.seat.createMany({
-        data: Array.from({ length: 6 }, (_, i) => ({
-          seatNumber: String(i + 1),
-          tableId: table.id,
-        })),
-      });
+      for (let i = 0; i < 10; i++) {
+        const { x, y } = tablePositions[i];
+        const table = await tx.table.create({
+          data: {
+            name: `Table ${i + 1}`,
+            seatCount: 4,
+            posX: x,
+            posY: y,
+            color: "#f59e0b",
+            venueMapId: venueMap.id,
+            ticketTypeId: ticketType.id,
+          },
+        });
+        await tx.seat.createMany({
+          data: Array.from({ length: 4 }, (_, j) => ({
+            seatNumber: String(j + 1),
+            tableId: table.id,
+          })),
+        });
+      }
 
-      console.log(`Created sample event: ${event.name} (${event.id})`);
+      console.log(`Created sample event: ${event.name} (${event.id}) - 200 seats`);
     });
   } else {
     console.log(`Sample event already exists: ${SAMPLE_EVENT_NAME}`);
