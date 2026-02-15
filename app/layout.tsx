@@ -1,10 +1,17 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import Link from "next/link";
 import "./globals.css";
 import { HeaderAuth } from "@/components/HeaderAuth";
 
 export const metadata: Metadata = {
   title: "Organizer1st Ticketing",
   description: "Event ticketing for Organizer1st",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
 };
 
 export default function RootLayout({
@@ -42,9 +49,12 @@ export default function RootLayout({
         <footer className="border-t border-zinc-800/60 bg-zinc-950/90">
           <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
             <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-              <div className="flex items-center gap-2 text-sm text-zinc-500">
+              <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm text-zinc-500">
                 <img src="/favicon.png" alt="" className="h-4 w-4 rounded object-contain opacity-80" />
                 <span>&copy; {new Date().getFullYear()} Organizer1st</span>
+                <Link href="/help" className="hover:text-zinc-400">
+                  Help
+                </Link>
               </div>
               <p className="text-xs text-zinc-600">
                 Live music. Good vibes. Great seats.

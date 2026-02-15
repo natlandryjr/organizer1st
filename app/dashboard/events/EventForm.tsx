@@ -26,6 +26,7 @@ type EventFormProps = {
     name: string;
     description: string;
     date: string;
+    endDate?: string | null;
     location: string | null;
     status: string;
     flyerUrl: string | null;
@@ -43,6 +44,9 @@ export function EventForm({ event }: EventFormProps) {
   const [description, setDescription] = useState(event?.description ?? "");
   const [date, setDate] = useState(
     event?.date ? new Date(event.date).toISOString().slice(0, 16) : ""
+  );
+  const [endDate, setEndDate] = useState(
+    event?.endDate ? new Date(event.endDate).toISOString().slice(0, 16) : ""
   );
   const [location, setLocation] = useState(event?.location ?? "");
   const [status, setStatus] = useState<"DRAFT" | "PUBLISHED">(
@@ -156,6 +160,7 @@ export function EventForm({ event }: EventFormProps) {
         name,
         description,
         date: date ? new Date(date).toISOString() : null,
+        endDate: endDate ? new Date(endDate).toISOString() : null,
         location: location.trim() || null,
         status,
         flyerUrl: flyerUrl.trim() || null,
@@ -226,7 +231,7 @@ export function EventForm({ event }: EventFormProps) {
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
-          className="w-full rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-2.5 text-zinc-100 placeholder-zinc-500 focus:border-accent-500/60 focus:outline-none focus:ring-1 focus:ring-accent-500/40"
+          className="min-h-[44px] w-full rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-accent-500/60 focus:outline-none focus:ring-1 focus:ring-accent-500/40 sm:py-2.5"
           placeholder="Summer Jazz Night"
         />
       </div>
@@ -241,14 +246,14 @@ export function EventForm({ event }: EventFormProps) {
           onChange={(e) => setDescription(e.target.value)}
           required
           rows={4}
-          className="w-full rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-2.5 text-zinc-100 placeholder-zinc-500 focus:border-accent-500/60 focus:outline-none focus:ring-1 focus:ring-accent-500/40"
+          className="min-h-[44px] w-full rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-accent-500/60 focus:outline-none focus:ring-1 focus:ring-accent-500/40 sm:py-2.5"
           placeholder="Describe your event..."
         />
       </div>
 
       <div>
         <label htmlFor="date" className="mb-1 block text-sm font-medium text-zinc-300">
-          Date & Time
+          Start Date & Time
         </label>
         <input
           id="date"
@@ -256,7 +261,21 @@ export function EventForm({ event }: EventFormProps) {
           value={date}
           onChange={(e) => setDate(e.target.value)}
           required
-          className="w-full rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-2.5 text-zinc-100 placeholder-zinc-500 focus:border-accent-500/60 focus:outline-none focus:ring-1 focus:ring-accent-500/40"
+          className="min-h-[44px] w-full rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-accent-500/60 focus:outline-none focus:ring-1 focus:ring-accent-500/40 sm:py-2.5"
+        />
+      </div>
+
+      <div>
+        <label htmlFor="endDate" className="mb-1 block text-sm font-medium text-zinc-300">
+          End Date & Time <span className="text-zinc-500">(optional)</span>
+        </label>
+        <input
+          id="endDate"
+          type="datetime-local"
+          value={endDate}
+          onChange={(e) => setEndDate(e.target.value)}
+          min={date || undefined}
+          className="min-h-[44px] w-full rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-accent-500/60 focus:outline-none focus:ring-1 focus:ring-accent-500/40 sm:py-2.5"
         />
       </div>
 
@@ -269,7 +288,7 @@ export function EventForm({ event }: EventFormProps) {
           type="text"
           value={location}
           onChange={(e) => setLocation(e.target.value)}
-          className="w-full rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-2.5 text-zinc-100 placeholder-zinc-500 focus:border-accent-500/60 focus:outline-none focus:ring-1 focus:ring-accent-500/40"
+          className="min-h-[44px] w-full rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-accent-500/60 focus:outline-none focus:ring-1 focus:ring-accent-500/40 sm:py-2.5"
           placeholder="Venue name or address"
         />
       </div>
@@ -282,7 +301,7 @@ export function EventForm({ event }: EventFormProps) {
           id="venue"
           value={venueId}
           onChange={(e) => setVenueId(e.target.value)}
-          className="w-full rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-2.5 text-zinc-100 focus:border-accent-500/60 focus:outline-none focus:ring-1 focus:ring-accent-500/40"
+          className="min-h-[44px] w-full rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-3 text-zinc-100 focus:border-accent-500/60 focus:outline-none focus:ring-1 focus:ring-accent-500/40 sm:py-2.5"
         >
           <option value="">No venue map</option>
           {venues.map((v) => (
@@ -445,7 +464,7 @@ export function EventForm({ event }: EventFormProps) {
           id="status"
           value={status}
           onChange={(e) => setStatus(e.target.value as "DRAFT" | "PUBLISHED")}
-          className="w-full rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-2.5 text-zinc-100 focus:border-accent-500/60 focus:outline-none focus:ring-1 focus:ring-accent-500/40"
+          className="min-h-[44px] w-full rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-3 text-zinc-100 focus:border-accent-500/60 focus:outline-none focus:ring-1 focus:ring-accent-500/40 sm:py-2.5"
         >
           <option value="DRAFT">Draft</option>
           <option value="PUBLISHED">Published</option>
@@ -483,17 +502,17 @@ export function EventForm({ event }: EventFormProps) {
         </div>
       </div>
 
-      <div className="flex gap-4 pt-4">
+      <div className="flex flex-col gap-3 pt-4 sm:flex-row sm:gap-4">
         <button
           type="submit"
           disabled={saving}
-          className="rounded-xl bg-accent-500 px-6 py-2.5 font-medium text-zinc-950 transition-colors hover:bg-accent-400 disabled:cursor-not-allowed disabled:opacity-50"
+          className="min-h-[48px] rounded-xl bg-accent-500 px-6 py-3 font-medium text-zinc-950 transition-colors hover:bg-accent-400 disabled:cursor-not-allowed disabled:opacity-50 touch-manipulation sm:py-2.5"
         >
           {saving ? "Saving..." : isEdit ? "Save Changes" : "Create Event"}
         </button>
         <Link
           href="/dashboard/events"
-          className="rounded-xl border border-zinc-600 px-6 py-2.5 font-medium text-zinc-300 transition-colors hover:bg-zinc-800"
+          className="flex min-h-[48px] items-center justify-center rounded-xl border border-zinc-600 px-6 py-3 font-medium text-zinc-300 transition-colors hover:bg-zinc-800 touch-manipulation sm:py-2.5"
         >
           Cancel
         </Link>

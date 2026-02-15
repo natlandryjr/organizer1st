@@ -43,10 +43,10 @@ export default async function Home() {
               Create Your First Event
             </Link>
             <Link
-              href="#how-it-works"
+              href={events.length > 0 ? `/events/${events[0].id}` : "#how-it-works"}
               className="w-full rounded-xl border border-zinc-600 px-8 py-4 text-base font-semibold text-zinc-200 transition-colors hover:border-zinc-500 hover:bg-zinc-800/50 sm:w-auto"
             >
-              See a Demo
+              {events.length > 0 ? "Try the Sample Event" : "See a Demo"}
             </Link>
           </div>
         </div>
@@ -154,8 +154,8 @@ export default async function Home() {
         <h2 className="mb-8 text-center text-3xl font-bold tracking-tight text-zinc-50">
           Simple, Transparent Pricing
         </h2>
-        <div className="mx-auto max-w-2xl overflow-hidden rounded-xl border border-zinc-700/60">
-          <table className="w-full text-left">
+        <div className="mx-auto max-w-2xl overflow-x-auto rounded-xl border border-zinc-700/60">
+          <table className="w-full min-w-[320px] text-left">
             <thead>
               <tr className="border-b border-zinc-700/60 bg-zinc-800/40">
                 <th className="px-6 py-4 font-semibold text-zinc-50">$50 Ticket</th>
@@ -193,6 +193,15 @@ export default async function Home() {
       {/* Upcoming Events (if any) */}
       {events.length > 0 && (
         <section>
+          <div className="mb-6 rounded-xl border border-amber-500/30 bg-amber-500/10 px-6 py-4">
+            <p className="text-sm text-amber-200">
+              <strong>Try it out:</strong> Book seats as an attendee, or{" "}
+              <Link href="/login" className="underline hover:text-amber-100">
+                log in as the demo organizer
+              </Link>{" "}
+              (demo@organizer1st.com / Demo1234!) to edit events, manage attendees, and explore the dashboard.
+            </p>
+          </div>
           <h2 className="mb-8 text-3xl font-bold tracking-tight text-zinc-50">
             Upcoming Events
           </h2>

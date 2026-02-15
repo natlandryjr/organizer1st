@@ -61,6 +61,7 @@ type Event = {
   id: string;
   name: string;
   date: string;
+  endDate?: string | null;
   description: string;
   maxSeats: number | null;
   flyerUrl: string | null;
@@ -189,6 +190,7 @@ export default function EditLayoutPage() {
           body: JSON.stringify({
             name: event.name,
             date: event.date,
+            endDate: event.endDate ?? null,
             description: event.description,
             maxSeats: event.maxSeats ?? null,
             flyerUrl: event.flyerUrl ?? null,
@@ -287,7 +289,7 @@ export default function EditLayoutPage() {
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm text-zinc-400">Date & time</label>
+              <label className="mb-1 block text-sm text-zinc-400">Start date & time</label>
               <input
                 type="datetime-local"
                 value={event.date ? toDatetimeLocal(event.date) : ""}
@@ -295,6 +297,21 @@ export default function EditLayoutPage() {
                   setEvent({ ...event, date: new Date(e.target.value).toISOString() })
                 }
                 required
+                className="w-full rounded border border-zinc-600 bg-zinc-800 px-2 py-1.5 text-sm text-zinc-100"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm text-zinc-400">End date & time <span className="text-zinc-500">(optional)</span></label>
+              <input
+                type="datetime-local"
+                value={event.endDate ? toDatetimeLocal(event.endDate) : ""}
+                onChange={(e) =>
+                  setEvent({
+                    ...event,
+                    endDate: e.target.value ? new Date(e.target.value).toISOString() : null,
+                  })
+                }
+                min={event.date ? toDatetimeLocal(event.date) : undefined}
                 className="w-full rounded border border-zinc-600 bg-zinc-800 px-2 py-1.5 text-sm text-zinc-100"
               />
             </div>

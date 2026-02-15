@@ -4,13 +4,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const navItems = [
-  { href: "/dashboard", label: "Overview" },
-  { href: "/dashboard/analytics", label: "Analytics" },
-  { href: "/dashboard/events", label: "Events" },
-  { href: "/dashboard/orders", label: "Orders" },
-  { href: "/dashboard/venues", label: "Venues" },
-  { href: "/dashboard/settings", label: "Organization" },
-  { href: "/admin5550", label: "Create Event" },
+  { href: "/dashboard", label: "Overview", dataTour: "nav-overview" },
+  { href: "/dashboard/analytics", label: "Analytics", dataTour: "nav-analytics" },
+  { href: "/dashboard/events", label: "Events", dataTour: "nav-events" },
+  { href: "/dashboard/orders", label: "Orders", dataTour: "nav-orders" },
+  { href: "/dashboard/venues", label: "Venues", dataTour: "nav-venues" },
+  { href: "/dashboard/settings", label: "Organization", dataTour: "nav-organization" },
+  { href: "/admin5550", label: "Create Event", dataTour: "nav-create-event" },
 ];
 
 export function DashboardNav() {
@@ -26,6 +26,7 @@ export function DashboardNav() {
           <Link
             key={item.href}
             href={item.href}
+            data-tour={item.dataTour}
             className={`text-sm font-medium transition-colors ${
               isActive ? "text-accent-400" : "text-zinc-400 hover:text-zinc-200"
             }`}

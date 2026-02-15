@@ -113,7 +113,7 @@ export function TableView({
               onClick={() => canToggle && onSeatSelect(seat)}
               disabled={isBooked || isLocked || (!allowHeldSelection && isHeld)}
               title={isHeld && holdLabel ? `Held for: ${holdLabel}` : undefined}
-              className={`flex h-12 w-12 sm:h-10 sm:w-10 items-center justify-center rounded-full text-xs font-medium transition-colors ${getSeatButtonClasses(seat)}`}
+              className={`flex h-11 w-11 sm:h-10 sm:w-10 items-center justify-center rounded-full text-xs font-medium transition-colors touch-manipulation ${getSeatButtonClasses(seat)}`}
               style={getSeatStyle(seat)}
             >
               {seat.seatNumber}

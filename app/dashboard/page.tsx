@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { RestartTourButton } from "./RestartTourButton";
 
 export default function DashboardPage() {
   return (
@@ -7,7 +8,8 @@ export default function DashboardPage() {
         Dashboard
       </h1>
       <p className="mt-2 text-zinc-400">
-        Welcome to your Organizer1st dashboard. Manage your organization and events.
+        Welcome to your Organizer1st dashboard. Manage your organization and events.{" "}
+        <RestartTourButton />
       </p>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2">

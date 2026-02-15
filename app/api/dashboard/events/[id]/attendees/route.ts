@@ -77,6 +77,7 @@ export async function GET(
         ticketType: ticketTypes.length === 1 ? ticketTypes[0] : ticketTypes.join(", "),
         orderNumber: b.id.slice(-8).toUpperCase(),
         createdAt: b.createdAt,
+        checkedInAt: b.checkedInAt,
       };
     });
 

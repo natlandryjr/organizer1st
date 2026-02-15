@@ -10,7 +10,7 @@ const COOKIE_NAME = "organizer1st_session";
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (!pathname.startsWith("/dashboard")) {
+  if (!pathname.startsWith("/dashboard") && !pathname.startsWith("/checkin")) {
     return NextResponse.next();
   }
 
@@ -32,5 +32,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*"],
+  matcher: ["/dashboard/:path*", "/checkin/:path*"],
 };

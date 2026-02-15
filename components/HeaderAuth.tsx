@@ -33,6 +33,12 @@ export function HeaderAuth() {
       {user ? (
         <>
           <Link
+            href="/help"
+            className="text-sm font-medium text-zinc-400 transition-colors hover:text-zinc-200"
+          >
+            Help
+          </Link>
+          <Link
             href="/dashboard"
             className="text-sm font-medium text-zinc-400 transition-colors hover:text-zinc-200"
           >
@@ -55,7 +61,7 @@ export function HeaderAuth() {
           </Link>
           <Link
             href="/signup"
-            className="rounded-lg bg-accent-500 px-3 py-1.5 text-sm font-medium text-zinc-950 transition-colors hover:bg-accent-400"
+            className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg bg-accent-500 px-4 py-2.5 text-sm font-medium text-zinc-950 transition-colors hover:bg-accent-400 touch-manipulation"
           >
             Sign up
           </Link>

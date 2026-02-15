@@ -1,4 +1,4 @@
-fly deployThis is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
 
@@ -7,6 +7,21 @@ fly deployThis is a [Next.js](https://nextjs.org) project bootstrapped with [`cr
 ```bash
 npx prisma migrate dev
 ```
+
+**Seed the platform** with a sample organizer and event so visitors can try it:
+
+```bash
+npm run db:seed
+```
+
+This creates:
+- **Sample Organizer** – a demo organization
+- **Sample Event** – a published event with seating (General Admission + VIP table)
+- **Demo organizer account** – log in at `/login` with:
+  - Email: `demo@organizer1st.com`
+  - Password: `Demo1234!`
+
+Anyone can book seats on the sample event, or log in as the demo organizer to edit events, manage attendees, and explore the dashboard.
 
 Then start the dev server:
 

@@ -43,6 +43,7 @@ type Event = {
   id: string;
   name: string;
   date: string;
+  endDate?: string | null;
   description: string;
   maxSeats: number | null;
   flyerUrl: string | null;
@@ -123,14 +124,18 @@ export default function EventPage() {
     );
   }
 
-  const formattedDate = new Date(event.date).toLocaleDateString("en-US", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
+  const formatDateTime = (d: Date) =>
+    d.toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    });
+  const formattedDate = event.endDate
+    ? `${formatDateTime(new Date(event.date))} – ${new Date(event.endDate).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}`
+    : formatDateTime(new Date(event.date));
 
   const bookedCount = event.venueMap ? getBookedCount(event.venueMap) : 0;
   const maxSeats = event.maxSeats ?? null;
@@ -193,11 +198,11 @@ export default function EventPage() {
           </div>
 
           {event.flyerUrl && (
-            <div className="relative shrink-0 animate-fade-in overflow-hidden rounded-2xl border border-zinc-800/60 shadow-2xl shadow-black/40">
+            <div className="relative w-full shrink-0 animate-fade-in overflow-hidden rounded-2xl border border-zinc-800/60 shadow-2xl shadow-black/40 sm:w-auto">
               <img
                 src={event.flyerUrl}
                 alt={`${event.name} flyer`}
-                className="max-h-80 w-auto object-cover"
+                className="max-h-64 w-full object-cover sm:max-h-80 sm:w-auto"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/40 to-zinc-950/10" />
               <div className="absolute bottom-0 left-0 right-0 p-4">

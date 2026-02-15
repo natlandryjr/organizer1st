@@ -138,7 +138,7 @@ export default function AnalyticsPage() {
           type="button"
           onClick={handleExportSalesReport}
           disabled={exporting}
-          className="shrink-0 rounded-xl border border-zinc-600 px-4 py-2.5 font-medium text-zinc-300 transition-colors hover:bg-zinc-800 disabled:opacity-50"
+          className="min-h-[44px] shrink-0 rounded-xl border border-zinc-600 px-4 py-3 font-medium text-zinc-300 transition-colors hover:bg-zinc-800 disabled:opacity-50 touch-manipulation sm:py-2.5"
         >
           {exporting ? "Exporting..." : "Export Full Sales Report"}
         </button>
@@ -234,10 +234,11 @@ export default function AnalyticsPage() {
               <YAxis
                 type="category"
                 dataKey="eventName"
-                width={120}
+                width={100}
                 stroke="#71717a"
-                fontSize={11}
+                fontSize={10}
                 tick={{ fill: "#a1a1aa" }}
+                tickFormatter={(v) => (String(v).length > 20 ? String(v).slice(0, 18) + "…" : v)}
               />
               <Tooltip
                 contentStyle={{

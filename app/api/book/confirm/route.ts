@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
 import { SeatStatus } from "@prisma/client";
+import { sendEmail, isEmailConfigured } from "@/lib/email";
+import { generateQrDataUrl } from "@/lib/qrcode";
 
 export async function POST(request: NextRequest) {
   try {
@@ -182,7 +184,65 @@ export async function POST(request: NextRequest) {
       });
     });
 
-    return NextResponse.json(booking);
+    let emailSent = false;
+    if (isEmailConfigured() && booking) {
+      try {
+        const event = await prisma.event.findUnique({
+          where: { id: eventId },
+          select: { name: true, date: true, location: true },
+        });
+        const qrDataUrl = await generateQrDataUrl(booking.id, 220);
+        const seatLabels = booking.seats
+          .map((s) => {
+            if (s.section) return `${s.section.name}, Seat ${s.seatNumber}`;
+            if (s.table) return `${s.table.name}, Seat ${s.seatNumber}`;
+            return `Seat ${s.seatNumber}`;
+          })
+          .join(", ");
+        const eventDate = event?.date
+          ? new Date(event.date).toLocaleDateString(undefined, {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+              hour: "numeric",
+              minute: "2-digit",
+            })
+          : "";
+        const html = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="font-family:system-ui,-apple-system,sans-serif;max-width:480px;margin:0 auto;padding:24px;color:#1f2937;background:#f9fafb;">
+  <div style="background:#fff;border-radius:12px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
+    <h1 style="margin:0 0 8px;font-size:1.5rem;color:#111827;">You're all set!</h1>
+    <p style="margin:0 0 20px;color:#6b7280;">Thank you, ${booking.attendeeName}. Your booking is confirmed.</p>
+    ${event ? `
+    <div style="margin-bottom:20px;padding:16px;background:#f3f4f6;border-radius:8px;">
+      <p style="margin:0 0 4px;font-weight:600;color:#374151;">${event.name}</p>
+      ${eventDate ? `<p style="margin:0 0 4px;font-size:0.9rem;color:#6b7280;">${eventDate}</p>` : ""}
+      ${event.location ? `<p style="margin:0;font-size:0.9rem;color:#6b7280;">${event.location}</p>` : ""}
+    </div>
+    ` : ""}
+    <p style="margin:0 0 8px;font-size:0.875rem;color:#6b7280;">Your seats: ${seatLabels}</p>
+    <p style="margin:0 0 16px;font-size:0.75rem;color:#9ca3af;">Booking ref: #${booking.id.slice(-8).toUpperCase()}</p>
+    <p style="margin:0 0 12px;font-size:0.875rem;font-weight:600;color:#374151;">Present this QR code at check-in:</p>
+    <div style="text-align:center;padding:16px;background:#fff;border:1px solid #e5e7eb;border-radius:8px;">
+      <img src="${qrDataUrl}" alt="Ticket QR Code" width="220" height="220" style="display:block;margin:0 auto;" />
+    </div>
+    <p style="margin:16px 0 0;font-size:0.75rem;color:#9ca3af;">Save this email or take a screenshot to show at the door.</p>
+  </div>
+</body>
+</html>`;
+        await sendEmail(booking.attendeeEmail, `Booking confirmed – ${event?.name ?? "Event"}`, html, true);
+        emailSent = true;
+      } catch (err) {
+        console.error("Failed to send confirmation email:", err);
+        // Don't fail the booking - email is best-effort
+      }
+    }
+
+    return NextResponse.json({ ...booking, emailSent });
   } catch (error) {
     if (error instanceof Error) {
       if (error.message.includes("already booked")) {

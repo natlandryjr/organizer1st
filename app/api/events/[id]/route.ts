@@ -53,6 +53,7 @@ export async function PATCH(
     const body = (await request.json()) as {
       name?: string;
       date?: string;
+      endDate?: string | null;
       description?: string;
       maxSeats?: number | null;
       flyerUrl?: string | null;
@@ -66,6 +67,12 @@ export async function PATCH(
         }),
         ...(body.date !== undefined && {
           date: new Date(body.date),
+        }),
+        ...(body.endDate !== undefined && {
+          endDate:
+            body.endDate === null || body.endDate === ""
+              ? null
+              : new Date(body.endDate),
         }),
         ...(body.description !== undefined && {
           description: body.description.trim(),

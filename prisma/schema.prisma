@@ -51,6 +51,7 @@ model Event {
   id             String      @id @default(cuid())
   name           String
   date           DateTime
+  endDate        DateTime?   // Optional end time
   description    String
   location       String?     // Venue or address
   status         EventStatus @default(DRAFT)
@@ -182,5 +183,6 @@ model Booking {
   attendeeName  String
   attendeeEmail String
   createdAt     DateTime  @default(now())
+  checkedInAt   DateTime? // When attendee was scanned at check-in
   seats         Seat[]
 }

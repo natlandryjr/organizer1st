@@ -20,6 +20,7 @@ type Booking = {
   attendeeEmail: string;
   createdAt: string;
   seats: Seat[];
+  emailSent?: boolean;
 };
 
 function getSeatLabel(seat: Seat): string {
@@ -128,8 +129,14 @@ function BookingSuccessContent() {
         </h1>
         <p className="mt-2 text-zinc-400">
           Thank you, <span className="font-medium text-zinc-200">{booking.attendeeName}</span>!
-          A confirmation has been sent to{" "}
-          <span className="text-zinc-300">{booking.attendeeEmail}</span>.
+          {booking.emailSent ? (
+            <>A confirmation with your ticket QR code has been sent to{" "}
+              <span className="text-zinc-300">{booking.attendeeEmail}</span>.</>
+          ) : (
+            <>Your booking reference is{" "}
+              <span className="font-mono text-zinc-300">#{booking.id.slice(-8).toUpperCase()}</span>.
+              Present this at the door for check-in.</>
+          )}
         </p>
       </div>
 

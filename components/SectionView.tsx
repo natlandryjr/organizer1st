@@ -105,7 +105,7 @@ export function SectionView({
               onClick={() => canToggle && onSeatSelect(seat)}
               disabled={isBooked || isLocked || (!allowHeldSelection && isHeld)}
               title={isHeld && holdLabel ? `Held for: ${holdLabel}` : undefined}
-              className={`flex h-11 w-11 sm:h-8 sm:w-8 items-center justify-center rounded text-xs font-medium transition-colors ${getButtonClasses()}`}
+              className={`flex h-11 w-11 sm:h-9 sm:w-9 items-center justify-center rounded text-xs font-medium transition-colors touch-manipulation ${getButtonClasses()}`}
               style={availableBg ? { backgroundColor: availableBg } : undefined}
             >
               {seat.seatNumber}

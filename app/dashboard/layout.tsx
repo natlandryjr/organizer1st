@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { DashboardNav } from "./DashboardNav";
+import { DashboardTour } from "@/components/DashboardTour";
 
 export default function DashboardLayout({
   children,
@@ -8,6 +8,7 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="space-y-8">
+      <DashboardTour />
       <DashboardNav />
       {children}
     </div>

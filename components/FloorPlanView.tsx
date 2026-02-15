@@ -248,36 +248,39 @@ export function FloorPlanView({
 
   return (
     <div className="space-y-2">
-      {/* Zoom controls */}
-      <div className="flex items-center gap-2">
-        <button
-          type="button"
-          onClick={() => handleZoom(-ZOOM_STEP)}
-          disabled={zoom <= MIN_ZOOM}
-          className="flex h-8 w-8 items-center justify-center rounded border border-zinc-700 bg-zinc-800 text-zinc-300 transition-colors hover:bg-zinc-700 disabled:opacity-40"
-          aria-label="Zoom out"
-        >
-          &minus;
-        </button>
-        <button
-          type="button"
-          onClick={resetView}
-          className="rounded border border-zinc-700 bg-zinc-800 px-2 py-1 text-xs text-zinc-400 transition-colors hover:bg-zinc-700"
-          title="Reset to fit view"
-        >
-          {zoomPercent}%
-        </button>
-        <button
-          type="button"
-          onClick={() => handleZoom(ZOOM_STEP)}
-          disabled={zoom >= MAX_ZOOM}
-          className="flex h-8 w-8 items-center justify-center rounded border border-zinc-700 bg-zinc-800 text-zinc-300 transition-colors hover:bg-zinc-700 disabled:opacity-40"
-          aria-label="Zoom in"
-        >
-          +
-        </button>
-        <span className="ml-2 text-xs text-zinc-500">
-          Ctrl+Scroll to zoom &middot; Drag to pan
+      {/* Zoom controls - min 44px touch targets on mobile */}
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={() => handleZoom(-ZOOM_STEP)}
+            disabled={zoom <= MIN_ZOOM}
+            className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg border border-zinc-700 bg-zinc-800 text-zinc-300 transition-colors hover:bg-zinc-700 disabled:opacity-40 touch-manipulation sm:min-h-8 sm:min-w-8"
+            aria-label="Zoom out"
+          >
+            &minus;
+          </button>
+          <button
+            type="button"
+            onClick={resetView}
+            className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg border border-zinc-700 bg-zinc-800 px-3 text-sm text-zinc-400 transition-colors hover:bg-zinc-700 touch-manipulation sm:min-h-8 sm:min-w-0 sm:px-2 sm:py-1 sm:text-xs"
+            title="Reset to fit view"
+          >
+            {zoomPercent}%
+          </button>
+          <button
+            type="button"
+            onClick={() => handleZoom(ZOOM_STEP)}
+            disabled={zoom >= MAX_ZOOM}
+            className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg border border-zinc-700 bg-zinc-800 text-zinc-300 transition-colors hover:bg-zinc-700 disabled:opacity-40 touch-manipulation sm:min-h-8 sm:min-w-8"
+            aria-label="Zoom in"
+          >
+            +
+          </button>
+        </div>
+        <span className="text-xs text-zinc-500">
+          <span className="sm:hidden">Pinch to zoom &middot; Drag to pan</span>
+          <span className="hidden sm:inline">Ctrl+Scroll to zoom &middot; Drag to pan</span>
         </span>
       </div>
 
@@ -286,7 +289,7 @@ export function FloorPlanView({
         ref={containerRef}
         className="relative overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900/50"
         style={{
-          height: Math.max(400, Math.min(contentHeight * fitZoom + 32, 700)),
+          height: Math.max(containerSize.w > 0 && containerSize.w < 640 ? 280 : 400, Math.min(contentHeight * fitZoom + 32, 700)),
           cursor: isDragging ? "grabbing" : "grab",
           touchAction: "none",
         }}

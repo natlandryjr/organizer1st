@@ -220,7 +220,7 @@ export function SeatingChart({
         </>
       )}
 
-      <div className="sticky bottom-0 z-10 overflow-hidden rounded-2xl border border-zinc-800/60 bg-zinc-900/95 p-6 shadow-[0_-8px_30px_rgba(0,0,0,0.5)] backdrop-blur-xl">
+      <div className="sticky bottom-0 z-10 overflow-hidden rounded-2xl border border-zinc-800/60 bg-zinc-900/95 p-4 shadow-[0_-8px_30px_rgba(0,0,0,0.5)] backdrop-blur-xl sm:p-6">
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
         <h3 className="mb-3 flex items-center gap-2 text-lg font-semibold text-zinc-50">
           Checkout
@@ -242,7 +242,7 @@ export function SeatingChart({
                   <button
                     type="button"
                     onClick={() => handleSeatSelect(seat)}
-                    className="shrink-0 text-zinc-500 hover:text-red-400"
+                    className="flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-lg text-zinc-500 transition-colors hover:bg-zinc-800 hover:text-red-400 touch-manipulation sm:min-h-0 sm:min-w-0"
                     aria-label={`Remove ${getSeatLabel(seat, venueMap)}`}
                   >
                     &times;
@@ -285,7 +285,7 @@ export function SeatingChart({
                     </button>
                   </div>
                 ) : (
-                  <div className="flex gap-2">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-stretch">
                     <input
                       type="text"
                       value={promoCode}
@@ -294,7 +294,7 @@ export function SeatingChart({
                         setPromoError(null);
                       }}
                       placeholder="Promo code"
-                      className="flex-1 rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-2.5 text-zinc-100 placeholder-zinc-600 focus:border-amber-500/60 focus:outline-none focus:ring-1 focus:ring-amber-500/40"
+                      className="min-h-[44px] flex-1 rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-3 text-zinc-100 placeholder-zinc-600 focus:border-amber-500/60 focus:outline-none focus:ring-1 focus:ring-amber-500/40 sm:py-2.5"
                     />
                     <button
                       type="button"
@@ -320,7 +320,7 @@ export function SeatingChart({
                           setPromoError("Failed to validate promo code");
                         }
                       }}
-                      className="rounded-xl border border-amber-500/50 bg-amber-500/20 px-4 py-2.5 text-sm font-medium text-amber-400 transition-colors hover:bg-amber-500/30"
+                      className="min-h-[44px] shrink-0 rounded-xl border border-amber-500/50 bg-amber-500/20 px-4 py-3 text-sm font-medium text-amber-400 transition-colors hover:bg-amber-500/30 touch-manipulation sm:py-2.5"
                     >
                       Apply
                     </button>
@@ -352,7 +352,7 @@ export function SeatingChart({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Your name"
-                className="w-full rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-2.5 text-zinc-100 placeholder-zinc-600 focus:border-amber-500/60 focus:outline-none focus:ring-1 focus:ring-amber-500/40"
+                className="min-h-[44px] w-full rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-3 text-zinc-100 placeholder-zinc-600 focus:border-amber-500/60 focus:outline-none focus:ring-1 focus:ring-amber-500/40 sm:py-2.5"
               />
             </div>
             <div>
@@ -368,7 +368,7 @@ export function SeatingChart({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="your@email.com"
-                className="w-full rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-2.5 text-zinc-100 placeholder-zinc-600 focus:border-amber-500/60 focus:outline-none focus:ring-1 focus:ring-amber-500/40"
+                className="min-h-[44px] w-full rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-3 text-zinc-100 placeholder-zinc-600 focus:border-amber-500/60 focus:outline-none focus:ring-1 focus:ring-amber-500/40 sm:py-2.5"
               />
             </div>
           </div>
@@ -445,7 +445,7 @@ export function SeatingChart({
               setIsLoading(false);
             }
           }}
-          className="btn-glow w-full rounded-xl bg-amber-500 px-4 py-3 font-semibold text-zinc-950 transition-colors hover:bg-amber-400 disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-600"
+          className="btn-glow min-h-[48px] w-full rounded-xl bg-amber-500 px-4 py-3 font-semibold text-zinc-950 transition-colors hover:bg-amber-400 disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-600 touch-manipulation"
         >
           {isLoading ? "Redirecting..." : "Confirm Booking"}
         </button>

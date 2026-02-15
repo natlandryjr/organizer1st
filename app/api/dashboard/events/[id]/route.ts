@@ -62,6 +62,7 @@ export async function PATCH(
       name?: string;
       description?: string;
       date?: string;
+      endDate?: string | null;
       location?: string | null;
       status?: "DRAFT" | "PUBLISHED";
       flyerUrl?: string | null;
@@ -87,6 +88,12 @@ export async function PATCH(
             description: body.description.trim(),
           }),
           ...(body.date !== undefined && { date: new Date(body.date) }),
+          ...(body.endDate !== undefined && {
+            endDate:
+              body.endDate === null || body.endDate === ""
+                ? null
+                : new Date(body.endDate),
+          }),
           ...(body.location !== undefined && {
             location:
               body.location === null || body.location?.trim() === ""

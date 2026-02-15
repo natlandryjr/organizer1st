@@ -56,6 +56,7 @@ export async function POST(request: NextRequest) {
       name: string;
       description: string;
       date: string;
+      endDate?: string | null;
       location?: string;
       status?: "DRAFT" | "PUBLISHED";
       flyerUrl?: string | null;
@@ -64,7 +65,7 @@ export async function POST(request: NextRequest) {
       promoCodes?: { code: string; discountType: "PERCENT" | "FLAT"; discountValue: number }[];
     };
 
-    const { name, description, date, location, status, flyerUrl, venueId, ticketTypes = [], promoCodes = [] } = body;
+    const { name, description, date, endDate, location, status, flyerUrl, venueId, ticketTypes = [], promoCodes = [] } = body;
 
     if (!name?.trim() || !description?.trim() || !date) {
       return NextResponse.json(
@@ -84,11 +85,13 @@ export async function POST(request: NextRequest) {
     }
 
     const event = await prisma.$transaction(async (tx) => {
+      const endDateParsed = endDate ? new Date(endDate) : null;
       const ev = await tx.event.create({
         data: {
           name: name.trim(),
           description: description.trim(),
           date: new Date(date),
+          endDate: endDateParsed && !isNaN(endDateParsed.getTime()) ? endDateParsed : null,
           location: location?.trim() || null,
           status: status === "PUBLISHED" ? "PUBLISHED" : "DRAFT",
           flyerUrl: flyerUrl?.trim() || null,

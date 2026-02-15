@@ -67,7 +67,7 @@ export default function SignUpPage() {
             onChange={(e) => setName(e.target.value)}
             required
             autoComplete="name"
-            className="w-full rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-2.5 text-zinc-100 placeholder-zinc-500 focus:border-accent-500/60 focus:outline-none focus:ring-1 focus:ring-accent-500/40"
+            className="min-h-[44px] w-full rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-accent-500/60 focus:outline-none focus:ring-1 focus:ring-accent-500/40 sm:py-2.5"
             placeholder="Your name"
           />
         </div>
@@ -83,7 +83,7 @@ export default function SignUpPage() {
             onChange={(e) => setEmail(e.target.value)}
             required
             autoComplete="email"
-            className="w-full rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-2.5 text-zinc-100 placeholder-zinc-500 focus:border-accent-500/60 focus:outline-none focus:ring-1 focus:ring-accent-500/40"
+            className="min-h-[44px] w-full rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-accent-500/60 focus:outline-none focus:ring-1 focus:ring-accent-500/40 sm:py-2.5"
             placeholder="you@example.com"
           />
         </div>
@@ -100,7 +100,7 @@ export default function SignUpPage() {
             required
             minLength={8}
             autoComplete="new-password"
-            className="w-full rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-2.5 text-zinc-100 placeholder-zinc-500 focus:border-accent-500/60 focus:outline-none focus:ring-1 focus:ring-accent-500/40"
+            className="min-h-[44px] w-full rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-accent-500/60 focus:outline-none focus:ring-1 focus:ring-accent-500/40 sm:py-2.5"
             placeholder="At least 8 characters"
           />
         </div>
@@ -108,7 +108,7 @@ export default function SignUpPage() {
         <button
           type="submit"
           disabled={loading}
-          className="btn-glow w-full rounded-xl bg-accent-500 px-4 py-3 font-semibold text-zinc-950 transition-colors hover:bg-accent-400 disabled:cursor-not-allowed disabled:opacity-50"
+          className="btn-glow min-h-[48px] w-full rounded-xl bg-accent-500 px-4 py-3 font-semibold text-zinc-950 transition-colors hover:bg-accent-400 disabled:cursor-not-allowed disabled:opacity-50 touch-manipulation"
         >
           {loading ? "Creating account..." : "Sign up"}
         </button>

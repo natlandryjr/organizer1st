@@ -1,13 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { LayoutDesigner } from "@/components/LayoutDesigner";
 
 type ExistingEvent = {
   id: string;
   name: string;
   date: string;
+  organization?: { id: string; name: string };
+};
+
+type Organization = {
+  id: string;
+  name: string;
 };
 
 type SectionConfig = {
@@ -39,9 +46,10 @@ type StageConfig = {
   height: number;
 };
 
-export default function AdminPage() {
+function AdminPageContent() {
   const [eventName, setEventName] = useState("");
   const [eventDate, setEventDate] = useState("");
+  const [eventEndDate, setEventEndDate] = useState("");
   const [eventDescription, setEventDescription] = useState("");
   const [maxSeats, setMaxSeats] = useState<string>("");
   const [flyerUrl, setFlyerUrl] = useState("");
@@ -59,16 +67,55 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [existingEvents, setExistingEvents] = useState<ExistingEvent[]>([]);
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
+  const [organizationId, setOrganizationId] = useState<string>("");
   const [duplicating, setDuplicating] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const searchParams = useSearchParams();
+  const orgFilter = searchParams.get("organizationId") ?? "";
 
   function loadEvents() {
-    fetch("/api/events")
-      .then((r) => r.ok ? r.json() : [])
+    const url = orgFilter
+      ? `/api/admin5550/events?organizationId=${orgFilter}`
+      : "/api/admin5550/events";
+    fetch(url)
+      .then((r) => (r.ok ? r.json() : []))
       .then((data) => setExistingEvents(data))
       .catch(() => {});
   }
 
-  useEffect(() => { loadEvents(); }, []);
+  function loadOrgs() {
+    fetch("/api/admin5550/organizations")
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data) => {
+        setOrganizations(data);
+        if (!organizationId && data.length > 0) setOrganizationId(data[0].id);
+      })
+      .catch(() => {});
+  }
+
+  useEffect(() => {
+    loadEvents();
+    loadOrgs();
+  }, [orgFilter]);
+
+  async function handleDelete(eventId: string) {
+    if (!confirm("Delete this event? All bookings and seating data will be lost.")) return;
+    setDeletingId(eventId);
+    setMessage(null);
+    try {
+      const res = await fetch(`/api/admin5550/events/${eventId}`, { method: "DELETE" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to delete");
+      setMessage({ type: "success", text: "Event deleted" });
+      loadEvents();
+    } catch (err) {
+      setMessage({ type: "error", text: err instanceof Error ? err.message : "Delete failed" });
+    } finally {
+      setDeletingId(null);
+    }
+  }
 
   async function handleDuplicate(eventId: string) {
     setDuplicating(eventId);
@@ -124,9 +171,11 @@ export default function AdminPage() {
         body: JSON.stringify({
           eventName,
           eventDate: new Date(eventDate).toISOString(),
+          eventEndDate: eventEndDate ? new Date(eventEndDate).toISOString() : null,
           eventDescription,
           maxSeats: maxSeats ? parseInt(maxSeats, 10) : null,
           flyerUrl: flyerUrl.trim() || null,
+          organizationId: organizationId || null,
           seatingConfig: {
             mapName,
             gridCols,
@@ -168,6 +217,7 @@ export default function AdminPage() {
       });
       setEventName("");
       setEventDate("");
+      setEventEndDate("");
       setEventDescription("");
       setMaxSeats("");
       setFlyerUrl("");
@@ -209,8 +259,27 @@ export default function AdminPage() {
                       year: "numeric",
                     })}
                   </span>
+                  {ev.organization && (
+                    <span className="ml-2 text-xs text-zinc-600">{ev.organization.name}</span>
+                  )}
                 </div>
                 <div className="flex gap-2">
+                  <Link
+                    href={`/events/${ev.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded bg-amber-500/20 px-3 py-1 text-sm font-medium text-amber-400 hover:bg-amber-500/30"
+                  >
+                    Attendee view
+                  </Link>
+                  {ev.organization && (
+                    <Link
+                      href={`/admin5550/organizer-view/${ev.organization.id}`}
+                      className="rounded bg-zinc-800 px-3 py-1 text-sm text-zinc-400 transition-colors hover:bg-zinc-700 hover:text-zinc-200"
+                    >
+                      Organizer view
+                    </Link>
+                  )}
                   <button
                     type="button"
                     onClick={() => handleDuplicate(ev.id)}
@@ -225,6 +294,14 @@ export default function AdminPage() {
                   >
                     Edit
                   </Link>
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(ev.id)}
+                    disabled={deletingId === ev.id}
+                    className="rounded bg-red-900/50 px-3 py-1 text-sm text-red-400 hover:bg-red-900/70 disabled:opacity-50"
+                  >
+                    {deletingId === ev.id ? "Deleting..." : "Delete"}
+                  </button>
                 </div>
               </li>
             ))}
@@ -235,6 +312,22 @@ export default function AdminPage() {
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-6 space-y-4">
           <h3 className="text-lg font-medium text-zinc-300">Event details</h3>
+          {organizations.length > 0 && (
+            <div>
+              <label className="mb-1 block text-sm text-zinc-400">Organization</label>
+              <select
+                value={organizationId}
+                onChange={(e) => setOrganizationId(e.target.value)}
+                className="w-full rounded border border-zinc-700 bg-zinc-800 px-3 py-2 text-zinc-100 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
+              >
+                {organizations.map((o) => (
+                  <option key={o.id} value={o.id}>
+                    {o.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
           <div>
             <label className="mb-1 block text-sm text-zinc-400">Event name</label>
             <input
@@ -247,12 +340,22 @@ export default function AdminPage() {
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm text-zinc-400">Date & time</label>
+            <label className="mb-1 block text-sm text-zinc-400">Start date & time</label>
             <input
               type="datetime-local"
               value={eventDate}
               onChange={(e) => setEventDate(e.target.value)}
               required
+              className="w-full rounded border border-zinc-700 bg-zinc-800 px-3 py-2 text-zinc-100 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-sm text-zinc-400">End date & time <span className="text-zinc-500">(optional)</span></label>
+            <input
+              type="datetime-local"
+              value={eventEndDate}
+              onChange={(e) => setEventEndDate(e.target.value)}
+              min={eventDate || undefined}
               className="w-full rounded border border-zinc-700 bg-zinc-800 px-3 py-2 text-zinc-100 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
             />
           </div>
@@ -586,5 +689,13 @@ export default function AdminPage() {
         </button>
       </form>
     </div>
+  );
+}
+
+export default function AdminPage() {
+  return (
+    <Suspense fallback={<div className="text-zinc-400">Loading...</div>}>
+      <AdminPageContent />
+    </Suspense>
   );
 }

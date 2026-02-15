@@ -85,7 +85,7 @@ export default function OrdersPage() {
           type="button"
           onClick={exportAllOrders}
           disabled={orders.length === 0}
-          className="shrink-0 rounded-xl border border-zinc-600 px-4 py-2.5 font-medium text-zinc-300 transition-colors hover:bg-zinc-800 disabled:opacity-50"
+          className="min-h-[44px] shrink-0 rounded-xl border border-zinc-600 px-4 py-3 font-medium text-zinc-300 transition-colors hover:bg-zinc-800 disabled:opacity-50 touch-manipulation sm:py-2.5"
         >
           Export All Orders
         </button>
@@ -99,24 +99,24 @@ export default function OrdersPage() {
 
       <div className="mt-8 overflow-hidden rounded-xl border border-zinc-800/60 bg-zinc-900/30">
         {orders.length === 0 ? (
-          <div className="px-8 py-16 text-center">
+          <div className="px-6 py-16 text-center sm:px-8">
             <p className="text-zinc-400">No orders yet</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="-mx-4 overflow-x-auto sm:mx-0">
             <table className="w-full min-w-[600px]">
               <thead>
                 <tr className="border-b border-zinc-800/60 bg-zinc-800/30">
-                  <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-zinc-400">
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-400 sm:px-6 sm:py-4">
                     Order ID
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-zinc-400">
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-400 sm:px-6 sm:py-4">
                     Customer
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-zinc-400">
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-400 sm:px-6 sm:py-4">
                     Amount
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-zinc-400">
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-400 sm:px-6 sm:py-4">
                     Date
                   </th>
                 </tr>
@@ -127,7 +127,7 @@ export default function OrdersPage() {
                     key={order.id}
                     className="border-b border-zinc-800/40 transition-colors hover:bg-zinc-800/20"
                   >
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-3 sm:px-6 sm:py-4">
                       <Link
                         href={`/dashboard/orders/${order.id}`}
                         className="font-mono font-medium text-amber-400 hover:text-amber-300"
@@ -135,13 +135,13 @@ export default function OrdersPage() {
                         #{order.orderId}
                       </Link>
                     </td>
-                    <td className="px-6 py-4 text-zinc-50">
+                    <td className="px-4 py-3 text-zinc-50 sm:px-6 sm:py-4">
                       {order.customerName}
                     </td>
-                    <td className="px-6 py-4 text-zinc-400">
+                    <td className="px-4 py-3 text-zinc-400 sm:px-6 sm:py-4">
                       ${order.amount}
                     </td>
-                    <td className="px-6 py-4 text-sm text-zinc-400">
+                    <td className="px-4 py-3 text-sm text-zinc-400 sm:px-6 sm:py-4">
                       {formatDate(order.date)}
                     </td>
                   </tr>

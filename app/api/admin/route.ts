@@ -38,9 +38,11 @@ type SeatingConfig = {
 type CreateEventPayload = {
   eventName: string;
   eventDate: string;
+  eventEndDate?: string | null;
   eventDescription: string;
   maxSeats?: number | null;
   flyerUrl?: string | null;
+  organizationId?: string | null;
   seatingConfig: SeatingConfig;
 };
 
@@ -59,7 +61,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as CreateEventPayload;
 
-    const { eventName, eventDate, eventDescription, maxSeats, flyerUrl, seatingConfig } = body;
+    const { eventName, eventDate, eventEndDate, eventDescription, maxSeats, flyerUrl, organizationId, seatingConfig } = body;
 
     if (!eventName || !eventDate || !eventDescription || !seatingConfig) {
       return NextResponse.json(
@@ -128,15 +130,18 @@ export async function POST(request: NextRequest) {
     }
     const gridRows = Math.max(gridRowsInput, minRows + 2);
 
+    const orgId = organizationId?.trim() || DEFAULT_ORGANIZATION_ID;
     const result = await prisma.$transaction(async (tx) => {
+      const eventEndDateParsed = eventEndDate ? new Date(eventEndDate) : null;
       const event = await tx.event.create({
         data: {
           name: eventName,
           date: eventDateParsed,
+          endDate: eventEndDateParsed && !isNaN(eventEndDateParsed.getTime()) ? eventEndDateParsed : null,
           description: eventDescription,
           maxSeats: maxSeats != null && maxSeats > 0 ? maxSeats : null,
           flyerUrl: flyerUrl && flyerUrl.trim() ? flyerUrl.trim() : null,
-          organizationId: DEFAULT_ORGANIZATION_ID,
+          organizationId: orgId,
         },
       });
 

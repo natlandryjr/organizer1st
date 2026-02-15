@@ -50,6 +50,7 @@ export default async function EditEventPage({
             name: event.name,
             description: event.description,
             date: event.date.toISOString(),
+            endDate: event.endDate?.toISOString() ?? null,
             location: event.location,
             status: event.status,
             flyerUrl: event.flyerUrl,

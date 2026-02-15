@@ -77,7 +77,7 @@ export default function DashboardEventsPage() {
         </h1>
         <Link
           href="/dashboard/events/new"
-          className="inline-flex items-center justify-center rounded-xl bg-accent-500 px-4 py-2.5 font-medium text-zinc-950 transition-colors hover:bg-accent-400"
+          className="inline-flex min-h-[44px] items-center justify-center rounded-xl bg-accent-500 px-4 py-3 font-medium text-zinc-950 transition-colors hover:bg-accent-400 touch-manipulation sm:py-2.5"
         >
           Create New Event
         </Link>
@@ -95,23 +95,23 @@ export default function DashboardEventsPage() {
             </Link>
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="-mx-4 overflow-x-auto sm:mx-0">
             <table className="w-full min-w-[600px]">
               <thead>
                 <tr className="border-b border-zinc-800/60 bg-zinc-800/30">
-                  <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-zinc-400">
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-400 sm:px-6 sm:py-4">
                     Event Name
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-zinc-400">
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-400 sm:px-6 sm:py-4">
                     Date
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-zinc-400">
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-400 sm:px-6 sm:py-4">
                     Location
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-zinc-400">
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-400 sm:px-6 sm:py-4">
                     Status
                   </th>
-                  <th className="px-6 py-4 text-right text-xs font-medium uppercase tracking-wider text-zinc-400">
+                  <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-zinc-400 sm:px-6 sm:py-4">
                     Actions
                   </th>
                 </tr>
@@ -122,7 +122,7 @@ export default function DashboardEventsPage() {
                     key={event.id}
                     className="border-b border-zinc-800/40 transition-colors hover:bg-zinc-800/20"
                   >
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-3 sm:px-6 sm:py-4">
                       <Link
                         href={`/events/${event.id}`}
                         className="font-medium text-zinc-50 hover:text-accent-400"
@@ -130,13 +130,13 @@ export default function DashboardEventsPage() {
                         {event.name}
                       </Link>
                     </td>
-                    <td className="px-6 py-4 text-sm text-zinc-400">
+                    <td className="px-4 py-3 text-sm text-zinc-400 sm:px-6 sm:py-4">
                       {formatDate(event.date)}
                     </td>
-                    <td className="px-6 py-4 text-sm text-zinc-400">
+                    <td className="px-4 py-3 text-sm text-zinc-400 sm:px-6 sm:py-4">
                       {event.location || "—"}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-3 sm:px-6 sm:py-4">
                       <span
                         className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${
                           event.status === "PUBLISHED"
@@ -147,24 +147,24 @@ export default function DashboardEventsPage() {
                         {event.status === "PUBLISHED" ? "Published" : "Draft"}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
+                    <td className="px-4 py-3 text-right sm:px-6 sm:py-4">
+                      <div className="flex flex-wrap items-center justify-end gap-1.5 sm:gap-2">
                         <Link
                           href={`/dashboard/events/${event.id}/attendees`}
-                          className="rounded-lg px-3 py-1.5 text-sm font-medium text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-zinc-50"
+                          className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg px-3 py-2 text-sm font-medium text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-zinc-50 touch-manipulation sm:min-h-0 sm:min-w-0 sm:py-1.5"
                         >
                           Attendees
                         </Link>
                         <Link
                           href={`/dashboard/events/${event.id}/edit`}
-                          className="rounded-lg px-3 py-1.5 text-sm font-medium text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-zinc-50"
+                          className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg px-3 py-2 text-sm font-medium text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-zinc-50 touch-manipulation sm:min-h-0 sm:min-w-0 sm:py-1.5"
                         >
                           Edit
                         </Link>
                         <button
                           onClick={() => handleDelete(event.id)}
                           disabled={deleting === event.id}
-                          className="rounded-lg px-3 py-1.5 text-sm font-medium text-red-400 transition-colors hover:bg-red-500/10 disabled:opacity-50"
+                          className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg px-3 py-2 text-sm font-medium text-red-400 transition-colors hover:bg-red-500/10 disabled:opacity-50 touch-manipulation sm:min-h-0 sm:min-w-0 sm:py-1.5"
                         >
                           {deleting === event.id ? "Deleting..." : "Delete"}
                         </button>
