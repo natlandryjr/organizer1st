@@ -40,7 +40,7 @@ type Table = {
 };
 
 const COLOR_PALETTE = [
-  "#6366f1", "#22c55e", "#f59e0b", "#ef4444", "#8b5cf6",
+  "#6366f1", "#22c55e", "#2563eb", "#ef4444", "#8b5cf6",
   "#06b6d4", "#ec4899", "#84cc16", "#64748b", "#f97316",
 ];
 
@@ -217,7 +217,7 @@ export default function EditLayoutPage() {
     return (
       <div className="space-y-4">
         <p className="text-red-400">Event not found or has no venue map.</p>
-        <Link href="/" className="text-amber-500 hover:text-amber-400">
+        <Link href="/" className="text-accent-500 hover:text-accent-400">
           &larr; Back to home
         </Link>
       </div>
@@ -232,7 +232,7 @@ export default function EditLayoutPage() {
     fetch(`/api/events/${eventId}`)
       .then((r) => r.ok && r.json())
       .then((data) => data && setEvent(data))
-      .catch(() => {});
+      .catch(() => { });
   };
 
   return (
@@ -261,11 +261,10 @@ export default function EditLayoutPage() {
             key={tab.id}
             type="button"
             onClick={() => setActiveTab(tab.id)}
-            className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-              activeTab === tab.id
-                ? "bg-zinc-700 text-zinc-50"
-                : "text-zinc-400 hover:text-zinc-300 hover:bg-zinc-800/50"
-            }`}
+            className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${activeTab === tab.id
+              ? "bg-zinc-700 text-zinc-50"
+              : "text-zinc-400 hover:text-zinc-300 hover:bg-zinc-800/50"
+              }`}
           >
             {tab.label}
           </button>
@@ -353,7 +352,7 @@ export default function EditLayoutPage() {
               </label>
               <div className="space-y-3">
                 <div>
-                  <label className="flex cursor-pointer items-center gap-3 rounded border border-dashed border-zinc-600 bg-zinc-800/50 px-4 py-3 transition-colors hover:border-amber-500/50 hover:bg-zinc-800">
+                  <label className="flex cursor-pointer items-center gap-3 rounded border border-dashed border-zinc-600 bg-zinc-800/50 px-4 py-3 transition-colors hover:border-accent-500/50 hover:bg-zinc-800">
                     <svg className="h-5 w-5 shrink-0 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
@@ -482,9 +481,8 @@ export default function EditLayoutPage() {
                             sections[i] = { ...sections[i], color: c };
                             setEvent({ ...event!, venueMap: { ...vm, sections } });
                           }}
-                          className={`h-5 w-5 rounded border-2 transition-all ${
-                            (sec.color ?? "") === c ? "border-zinc-100 scale-110" : "border-transparent hover:border-zinc-500"
-                          }`}
+                          className={`h-5 w-5 rounded border-2 transition-all ${(sec.color ?? "") === c ? "border-zinc-100 scale-110" : "border-transparent hover:border-zinc-500"
+                            }`}
                           style={{ backgroundColor: c }}
                           title={c}
                         />
@@ -505,9 +503,8 @@ export default function EditLayoutPage() {
                             tables[i] = { ...tables[i], color: c };
                             setEvent({ ...event!, venueMap: { ...vm, tables } });
                           }}
-                          className={`h-5 w-5 rounded border-2 transition-all ${
-                            (tab.color ?? "") === c ? "border-zinc-100 scale-110" : "border-transparent hover:border-zinc-500"
-                          }`}
+                          className={`h-5 w-5 rounded border-2 transition-all ${(tab.color ?? "") === c ? "border-zinc-100 scale-110" : "border-transparent hover:border-zinc-500"
+                            }`}
                           style={{ backgroundColor: c }}
                           title={c}
                         />
@@ -596,11 +593,10 @@ export default function EditLayoutPage() {
 
         {message && (
           <div
-            className={`rounded-lg p-4 ${
-              message.type === "success"
-                ? "bg-green-900/30 text-green-300 border border-green-800"
-                : "bg-red-900/30 text-red-300 border border-red-800"
-            }`}
+            className={`rounded-lg p-4 ${message.type === "success"
+              ? "bg-green-900/30 text-green-300 border border-green-800"
+              : "bg-red-900/30 text-red-300 border border-red-800"
+              }`}
           >
             {message.text}
           </div>
@@ -610,7 +606,7 @@ export default function EditLayoutPage() {
           type="button"
           onClick={handleSave}
           disabled={saving}
-          className="rounded-lg bg-amber-500 px-6 py-2.5 font-semibold text-zinc-950 hover:bg-amber-400 disabled:opacity-50"
+          className="rounded-lg bg-button px-6 py-2.5 font-semibold text-white hover:bg-accent-600 disabled:opacity-50"
         >
           {saving ? "Saving..." : "Save layout"}
         </button>

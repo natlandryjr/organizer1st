@@ -14,7 +14,7 @@ export function RestartTourButton() {
     <button
       type="button"
       onClick={handleRestart}
-      className="text-amber-400 hover:text-amber-300 underline"
+      className="text-accent-400 hover:text-accent-300 underline"
     >
       Take the tour again
     </button>

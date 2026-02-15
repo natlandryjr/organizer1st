@@ -106,7 +106,7 @@ export default function OrderDetailPage() {
           </p>
         </div>
 
-        <div className="rounded-xl border border-zinc-800/60 bg-zinc-900/30 p-6">
+        <div className="glass-card p-6">
           <h2 className="mb-4 text-lg font-semibold text-zinc-50">
             Customer
           </h2>
@@ -125,7 +125,7 @@ export default function OrderDetailPage() {
                 <dd>
                   <Link
                     href={`/events/${order.event.id}`}
-                    className="text-amber-400 hover:text-amber-300"
+                    className="text-accent-400 hover:text-accent-300"
                   >
                     {order.event.name}
                   </Link>
@@ -135,7 +135,7 @@ export default function OrderDetailPage() {
           </dl>
         </div>
 
-        <div className="overflow-hidden rounded-xl border border-zinc-800/60 bg-zinc-900/30">
+        <div className="overflow-hidden glass-card">
           <div className="border-b border-zinc-800/60 px-6 py-4">
             <h2 className="text-lg font-semibold text-zinc-50">
               Items Purchased
@@ -160,7 +160,7 @@ export default function OrderDetailPage() {
                 {items.map((item, i) => (
                   <tr
                     key={i}
-                    className="border-b border-zinc-800/40"
+                    className="border-b border-zinc-800/40 transition-colors hover:bg-primary-500/5"
                   >
                     <td className="px-6 py-4 text-zinc-100">
                       {item.location}

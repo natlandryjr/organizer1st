@@ -25,7 +25,7 @@ export default function Admin5550Layout({
             href="/"
             className="text-sm text-zinc-500 hover:text-zinc-300"
           >
-            ← Back to site
+            &larr; Back to site
           </Link>
           <h1 className="mt-1 text-2xl font-bold text-zinc-50">
             Super Admin
@@ -45,7 +45,7 @@ export default function Admin5550Layout({
               href={item.href}
               className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
                 isActive
-                  ? "bg-amber-500/20 text-amber-400"
+                  ? "bg-primary-500/20 text-primary-400 border-b-2 border-primary-500"
                   : "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200"
               }`}
             >

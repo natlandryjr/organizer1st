@@ -96,7 +96,7 @@ export function CanvasComponent({
         );
       case "STAGE":
         return (
-          <div className="flex h-full items-center justify-center rounded border-2 border-amber-500/60 bg-amber-500/20">
+          <div className="flex h-full items-center justify-center rounded border-2 border-accent-500/60 bg-accent-500/20">
             <span className="text-sm font-medium text-zinc-300">
               {component.props.label ?? "Stage"}
             </span>
@@ -132,7 +132,7 @@ export function CanvasComponent({
     >
       <div
         className={`relative h-full w-full ${
-          selected ? "ring-2 ring-amber-500 ring-offset-1 ring-offset-zinc-900" : ""
+          selected ? "ring-2 ring-accent-500 ring-offset-1 ring-offset-zinc-900" : ""
         }`}
       >
         {renderContent()}

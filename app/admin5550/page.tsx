@@ -36,7 +36,7 @@ type TableConfig = {
 };
 
 const COLOR_PALETTE = [
-  "#6366f1", "#22c55e", "#f59e0b", "#ef4444", "#8b5cf6",
+  "#6366f1", "#22c55e", "#2563eb", "#ef4444", "#8b5cf6",
   "#06b6d4", "#ec4899", "#84cc16", "#64748b", "#f97316",
 ];
 
@@ -84,7 +84,7 @@ function AdminPageContent() {
     fetch(url)
       .then((r) => (r.ok ? r.json() : []))
       .then((data) => setExistingEvents(data))
-      .catch(() => {});
+      .catch(() => { });
   }
 
   function loadOrgs() {
@@ -94,7 +94,7 @@ function AdminPageContent() {
         setOrganizations(data);
         if (!organizationId && data.length > 0) setOrganizationId(data[0].id);
       })
-      .catch(() => {});
+      .catch(() => { });
   }
 
   useEffect(() => {
@@ -247,7 +247,7 @@ function AdminPageContent() {
       </div>
 
       {existingEvents.length > 0 && (
-        <div className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-6 space-y-3">
+        <div className="glass-card p-6 space-y-3">
           <h3 className="text-lg font-medium text-zinc-300">Existing events</h3>
           <ul className="divide-y divide-zinc-800">
             {existingEvents.map((ev) => (
@@ -270,7 +270,7 @@ function AdminPageContent() {
                     href={`/events/${ev.id}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="rounded bg-amber-500/20 px-3 py-1 text-sm font-medium text-amber-400 hover:bg-amber-500/30"
+                    className="rounded bg-accent-500/20 px-3 py-1 text-sm font-medium text-accent-400 hover:bg-accent-500/30"
                   >
                     Attendee view
                   </Link>
@@ -312,7 +312,7 @@ function AdminPageContent() {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-6 space-y-4">
+        <div className="glass-card p-6 space-y-4">
           <h3 className="text-lg font-medium text-zinc-300">Event details</h3>
           {organizations.length > 0 && (
             <div>
@@ -320,7 +320,7 @@ function AdminPageContent() {
               <select
                 value={organizationId}
                 onChange={(e) => setOrganizationId(e.target.value)}
-                className="w-full rounded border border-zinc-700 bg-zinc-800 px-3 py-2 text-zinc-100 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                className="w-full rounded border border-zinc-700 bg-zinc-800 px-3 py-2 text-zinc-100 focus:border-accent-500 focus:outline-none focus:ring-1 focus:ring-accent-500"
               >
                 {organizations.map((o) => (
                   <option key={o.id} value={o.id}>
@@ -337,7 +337,7 @@ function AdminPageContent() {
               value={eventName}
               onChange={(e) => setEventName(e.target.value)}
               required
-              className="w-full rounded border border-zinc-700 bg-zinc-800 px-3 py-2 text-zinc-100 placeholder-zinc-500 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
+              className="w-full rounded border border-zinc-700 bg-zinc-800 px-3 py-2 text-zinc-100 placeholder-zinc-500 focus:border-accent-500 focus:outline-none focus:ring-1 focus:ring-accent-500"
               placeholder="Jazz Night"
             />
           </div>
@@ -348,7 +348,7 @@ function AdminPageContent() {
               value={eventDate}
               onChange={(e) => setEventDate(e.target.value)}
               required
-              className="w-full rounded border border-zinc-700 bg-zinc-800 px-3 py-2 text-zinc-100 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
+              className="w-full rounded border border-zinc-700 bg-zinc-800 px-3 py-2 text-zinc-100 focus:border-accent-500 focus:outline-none focus:ring-1 focus:ring-accent-500"
             />
           </div>
           <div>
@@ -358,7 +358,7 @@ function AdminPageContent() {
               value={eventEndDate}
               onChange={(e) => setEventEndDate(e.target.value)}
               min={eventDate || undefined}
-              className="w-full rounded border border-zinc-700 bg-zinc-800 px-3 py-2 text-zinc-100 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
+              className="w-full rounded border border-zinc-700 bg-zinc-800 px-3 py-2 text-zinc-100 focus:border-accent-500 focus:outline-none focus:ring-1 focus:ring-accent-500"
             />
           </div>
           <div>
@@ -368,7 +368,7 @@ function AdminPageContent() {
               onChange={(e) => setEventDescription(e.target.value)}
               required
               rows={3}
-              className="w-full rounded border border-zinc-700 bg-zinc-800 px-3 py-2 text-zinc-100 placeholder-zinc-500 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
+              className="w-full rounded border border-zinc-700 bg-zinc-800 px-3 py-2 text-zinc-100 placeholder-zinc-500 focus:border-accent-500 focus:outline-none focus:ring-1 focus:ring-accent-500"
               placeholder="An evening of live jazz..."
             />
           </div>
@@ -379,7 +379,7 @@ function AdminPageContent() {
               min={1}
               value={maxSeats}
               onChange={(e) => setMaxSeats(e.target.value)}
-              className="w-full rounded border border-zinc-700 bg-zinc-800 px-3 py-2 text-zinc-100 placeholder-zinc-500 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
+              className="w-full rounded border border-zinc-700 bg-zinc-800 px-3 py-2 text-zinc-100 placeholder-zinc-500 focus:border-accent-500 focus:outline-none focus:ring-1 focus:ring-accent-500"
               placeholder="Leave empty for no limit"
             />
             <p className="mt-1 text-xs text-zinc-500">
@@ -390,7 +390,7 @@ function AdminPageContent() {
             <label className="mb-1 block text-sm text-zinc-400">Event flyer image (optional)</label>
             <div className="space-y-3">
               <div>
-                <label className="flex cursor-pointer items-center gap-3 rounded border border-dashed border-zinc-600 bg-zinc-800/50 px-4 py-3 transition-colors hover:border-amber-500/50 hover:bg-zinc-800">
+                <label className="flex cursor-pointer items-center gap-3 rounded border border-dashed border-zinc-600 bg-zinc-800/50 px-4 py-3 transition-colors hover:border-accent-500/50 hover:bg-zinc-800">
                   <svg className="h-5 w-5 shrink-0 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
@@ -441,7 +441,7 @@ function AdminPageContent() {
                   type="url"
                   value={flyerUrl}
                   onChange={(e) => setFlyerUrl(e.target.value)}
-                  className="w-full rounded border border-zinc-700 bg-zinc-800 px-3 py-2 text-zinc-100 placeholder-zinc-500 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                  className="w-full rounded border border-zinc-700 bg-zinc-800 px-3 py-2 text-zinc-100 placeholder-zinc-500 focus:border-accent-500 focus:outline-none focus:ring-1 focus:ring-accent-500"
                   placeholder="https://example.com/flyer.jpg"
                 />
               </div>
@@ -449,7 +449,7 @@ function AdminPageContent() {
           </div>
         </div>
 
-        <div className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-6 space-y-4">
+        <div className="glass-card p-6 space-y-4">
           <h3 className="text-lg font-medium text-zinc-300">Seating map</h3>
           <div>
             <label className="mb-1 block text-sm text-zinc-400">Map name</label>
@@ -458,7 +458,7 @@ function AdminPageContent() {
               value={mapName}
               onChange={(e) => setMapName(e.target.value)}
               required
-              className="w-full rounded border border-zinc-700 bg-zinc-800 px-3 py-2 text-zinc-100 placeholder-zinc-500 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
+              className="w-full rounded border border-zinc-700 bg-zinc-800 px-3 py-2 text-zinc-100 placeholder-zinc-500 focus:border-accent-500 focus:outline-none focus:ring-1 focus:ring-accent-500"
               placeholder="Main Hall"
             />
           </div>
@@ -523,7 +523,7 @@ function AdminPageContent() {
               <button
                 type="button"
                 onClick={addSection}
-                className="text-sm text-amber-500 hover:text-amber-400"
+                className="text-sm text-accent-500 hover:text-accent-400"
               >
                 + Add section
               </button>
@@ -564,9 +564,8 @@ function AdminPageContent() {
                           key={c}
                           type="button"
                           onClick={() => updateSection(i, "color", c)}
-                          className={`h-6 w-6 rounded border-2 transition-all ${
-                            sec.color === c ? "border-zinc-100 scale-110" : "border-transparent hover:border-zinc-500"
-                          }`}
+                          className={`h-6 w-6 rounded border-2 transition-all ${sec.color === c ? "border-zinc-100 scale-110" : "border-transparent hover:border-zinc-500"
+                            }`}
                           style={{ backgroundColor: c }}
                           title={c}
                         />
@@ -591,7 +590,7 @@ function AdminPageContent() {
               <button
                 type="button"
                 onClick={addTable}
-                className="text-sm text-amber-500 hover:text-amber-400"
+                className="text-sm text-accent-500 hover:text-accent-400"
               >
                 + Add table
               </button>
@@ -628,9 +627,8 @@ function AdminPageContent() {
                           key={c}
                           type="button"
                           onClick={() => updateTable(i, "color", c)}
-                          className={`h-6 w-6 rounded border-2 transition-all ${
-                            tab.color === c ? "border-zinc-100 scale-110" : "border-transparent hover:border-zinc-500"
-                          }`}
+                          className={`h-6 w-6 rounded border-2 transition-all ${tab.color === c ? "border-zinc-100 scale-110" : "border-transparent hover:border-zinc-500"
+                            }`}
                           style={{ backgroundColor: c }}
                           title={c}
                         />
@@ -672,11 +670,10 @@ function AdminPageContent() {
 
         {message && (
           <div
-            className={`rounded-lg p-4 ${
-              message.type === "success"
-                ? "bg-green-900/30 text-green-300 border border-green-800"
-                : "bg-red-900/30 text-red-300 border border-red-800"
-            }`}
+            className={`rounded-lg p-4 ${message.type === "success"
+              ? "bg-green-900/30 text-green-300 border border-green-800"
+              : "bg-red-900/30 text-red-300 border border-red-800"
+              }`}
           >
             {message.text}
           </div>
@@ -685,7 +682,7 @@ function AdminPageContent() {
         <button
           type="submit"
           disabled={loading}
-          className="rounded-lg bg-amber-500 px-6 py-2.5 font-semibold text-zinc-950 transition-colors hover:bg-amber-400 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="btn-glow rounded-lg bg-gradient-to-r from-primary-500 to-primary-600 px-6 py-2.5 font-semibold text-white shadow-lg shadow-primary-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? "Creating..." : "Create event"}
         </button>

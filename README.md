@@ -1,41 +1,61 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+## Local Setup (Test Organizer + Attendee Views)
 
-**Local development** requires PostgreSQL. Use a local Postgres, [Docker](https://hub.docker.com/_/postgres), or a free cloud DB ([Neon](https://neon.tech), [Supabase](https://supabase.com)). Set `DATABASE_URL` in `.env` to your Postgres connection string, then run migrations:
+**1. Database** – PostgreSQL required. Choose one:
+
+- **Local Postgres:** `createdb organizer1st` then set `DATABASE_URL` in `.env`
+- **Docker:** `docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=organizer1st postgres`
+- **Fly Postgres (remote):** `fly proxy 5432 -a organizer1st-db` then `DATABASE_URL="postgresql://postgres:PASSWORD@localhost:5432/postgres"`
+- **Neon / Supabase:** Create a project and copy the connection string
+
+**2. Environment** – Copy `.env.example` to `.env` and set at minimum:
+
+```bash
+cp .env.example .env
+# Edit .env: set DATABASE_URL, JWT_SECRET (any random string)
+# Optional for full features: Stripe keys, SMTP for emails
+```
+
+**3. Migrations & seed:**
 
 ```bash
 npx prisma migrate dev
-```
-
-**Seed the platform** with a sample organizer and event so visitors can try it:
-
-```bash
 npm run db:seed
 ```
 
-This creates:
-- **Sample Organizer** – a demo organization
-- **Sample Event** – a published event with seating (General Admission + VIP table)
-- **Demo organizer account** – log in at `/login` with:
-  - Email: `demo@organizer1st.com`
-  - Password: `Demo1234!`
-
-Anyone can book seats on the sample event, or log in as the demo organizer to edit events, manage attendees, and explore the dashboard.
-
-Then start the dev server:
+**4. Start dev server:**
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**5. Test both views:**
+
+| View | URL | Notes |
+|------|-----|-------|
+| **Demo hub** | [http://localhost:3000/demo](http://localhost:3000/demo) | Choose organizer or attendee |
+| **Attendee view** | [http://localhost:3000/demo](http://localhost:3000/demo) → "Attendee view" | Book seats, pick seats on chart |
+| **Organizer view** | [http://localhost:3000/demo](http://localhost:3000/demo) → "Organizer view" | Events, venues, orders |
+| **Log in as organizer** | [http://localhost:3000/login](http://localhost:3000/login) | demo@organizer1st.com / Demo1234! |
+| **Super admin** | [http://localhost:3000/admin5550](http://localhost:3000/admin5550) | Full platform CRUD |
+
+## Getting Started (Quick Reference)
+
+**Local development** requires PostgreSQL. Set `DATABASE_URL` in `.env`, then:
+
+```bash
+npx prisma migrate dev
+npm run db:seed
+npm run dev
+```
+
+**Seed creates:**
+- **Sample Organizer** – demo organization
+- **Sample Event** – 200 seats (10 tables×4, 2 sections×80)
+- **Demo account** – demo@organizer1st.com / Demo1234!
+
+Open [http://localhost:3000](http://localhost:3000) with your browser.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
@@ -79,3 +99,31 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
    ```
 
 Migrations run automatically on each deploy via `release_command`. The app will be at `https://organizer1st.fly.dev` (or your chosen app name).
+
+## Mobile Apps (Capacitor)
+
+The project includes [Capacitor](https://capacitorjs.com/) for building native iOS and Android apps. The mobile apps load the deployed web app in a native shell.
+
+**Prerequisites:**
+- Xcode (macOS, for iOS)
+- Android Studio (for Android)
+- Deploy the web app first (Fly.io or similar)
+
+**Build and run:**
+
+```bash
+# Sync web assets to native projects
+npm run cap:sync
+
+# Open in Xcode (iOS)
+npm run mobile:ios
+
+# Open in Android Studio (Android)
+npm run mobile:android
+```
+
+**App Store submission:**
+- **iOS:** Open `ios/App/App.xcworkspace` in Xcode, configure signing, then Archive and submit via App Store Connect
+- **Android:** Open `android` in Android Studio, build a release APK/AAB, then upload to Google Play Console
+
+**Custom URL:** Set `CAPACITOR_SERVER_URL` when building to point to a different backend (e.g. staging).

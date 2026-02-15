@@ -77,7 +77,7 @@ function BookingSuccessContent() {
   if (loading) {
     return (
       <div className="flex flex-col items-center py-20 text-center">
-        <div className="mb-4 h-12 w-12 animate-spin rounded-full border-2 border-zinc-700 border-t-amber-500" />
+        <div className="mb-4 h-12 w-12 animate-spin rounded-full border-2 border-zinc-700 border-t-accent-500" />
         <p className="text-zinc-400">Confirming your booking...</p>
       </div>
     );
@@ -99,10 +99,10 @@ function BookingSuccessContent() {
         <p className="rounded-xl border border-red-800/30 bg-red-900/10 p-4 text-red-400">{error}</p>
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-amber-500 hover:text-amber-400"
+          className="inline-flex items-center gap-1.5 text-accent-500 hover:text-accent-400"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="m15 18-6-6 6-6"/>
+            <path d="m15 18-6-6 6-6" />
           </svg>
           Return to events
         </Link>
@@ -141,7 +141,7 @@ function BookingSuccessContent() {
       </div>
 
       {/* Booking details card */}
-      <div className="overflow-hidden rounded-2xl border border-zinc-800/60 bg-zinc-900/30">
+      <div className="overflow-hidden glass-card">
         <div className="border-b border-zinc-800/60 px-5 py-3">
           <p className="text-xs text-zinc-500">
             Booking reference: <span className="font-mono text-zinc-300">#{booking.id.slice(-8)}</span>
@@ -154,7 +154,7 @@ function BookingSuccessContent() {
           <ul className="space-y-2">
             {booking.seats.map((seat) => (
               <li key={seat.id} className="flex items-center gap-3 text-zinc-300">
-                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-amber-500/10 text-xs font-semibold text-amber-400">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-accent-500/10 text-xs font-semibold text-accent-400">
                   {seat.seatNumber}
                 </span>
                 {getSeatLabel(seat)}
@@ -165,24 +165,24 @@ function BookingSuccessContent() {
       </div>
 
       {/* What's next card */}
-      <div className="rounded-2xl border border-zinc-800/60 bg-zinc-900/30 p-5">
+      <div className="glass-card p-5">
         <h3 className="mb-3 text-sm font-medium text-zinc-300">What&apos;s next?</h3>
         <ul className="space-y-2 text-sm text-zinc-500">
           <li className="flex items-start gap-2">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0 text-amber-500/60">
-              <polyline points="20 6 9 17 4 12"/>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0 text-accent-500/60">
+              <polyline points="20 6 9 17 4 12" />
             </svg>
             Check your email for your booking confirmation
           </li>
           <li className="flex items-start gap-2">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0 text-amber-500/60">
-              <polyline points="20 6 9 17 4 12"/>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0 text-accent-500/60">
+              <polyline points="20 6 9 17 4 12" />
             </svg>
             Arrive at least 15 minutes before the event
           </li>
           <li className="flex items-start gap-2">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0 text-amber-500/60">
-              <polyline points="20 6 9 17 4 12"/>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0 text-accent-500/60">
+              <polyline points="20 6 9 17 4 12" />
             </svg>
             Present your confirmation email at the door
           </li>
@@ -192,11 +192,11 @@ function BookingSuccessContent() {
       <div className="text-center">
         <Link
           href="/"
-          className="btn-glow inline-flex items-center gap-2 rounded-full bg-amber-500 px-6 py-2.5 font-semibold text-zinc-950 transition-colors hover:bg-amber-400"
+          className="btn-glow inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary-500 to-primary-600 px-6 py-2.5 font-semibold text-white shadow-lg shadow-primary-500/20"
         >
           Browse more events
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="m9 18 6-6-6-6"/>
+            <path d="m9 18 6-6-6-6" />
           </svg>
         </Link>
       </div>
@@ -209,7 +209,7 @@ export default function BookingSuccessPage() {
     <Suspense
       fallback={
         <div className="flex flex-col items-center py-20 text-center">
-          <div className="mb-4 h-12 w-12 animate-spin rounded-full border-2 border-zinc-700 border-t-amber-500" />
+          <div className="mb-4 h-12 w-12 animate-spin rounded-full border-2 border-zinc-700 border-t-accent-500" />
           <p className="text-zinc-400">Loading...</p>
         </div>
       }

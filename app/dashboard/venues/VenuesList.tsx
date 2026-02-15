@@ -58,7 +58,7 @@ export function VenuesList() {
         <p className="text-zinc-500">No venues yet.</p>
         <Link
           href="/dashboard/venues/new"
-          className="mt-4 inline-block text-amber-500 hover:text-amber-400"
+          className="mt-4 inline-block text-accent-500 hover:text-accent-400"
         >
           Create your first venue
         </Link>
@@ -71,7 +71,7 @@ export function VenuesList() {
       {venues.map((venue) => (
         <div
           key={venue.id}
-          className="flex flex-col rounded-xl border border-zinc-800/60 bg-zinc-900/30 p-4"
+          className="glass-card card-lift flex flex-col p-4"
         >
           <h3 className="font-semibold text-zinc-100">{venue.name}</h3>
           <p className="mt-1 text-xs text-zinc-500">

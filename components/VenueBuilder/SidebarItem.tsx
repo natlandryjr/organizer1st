@@ -22,11 +22,11 @@ export function SidebarItem({ type, label, icon }: SidebarItemProps) {
   return (
     <div
       ref={dragRef as unknown as React.Ref<HTMLDivElement>}
-      className={`flex cursor-grab items-center gap-3 rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-3 transition-colors hover:border-amber-500/40 hover:bg-zinc-800 ${
+      className={`flex cursor-grab items-center gap-3 rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-3 transition-colors hover:border-accent-500/40 hover:bg-zinc-800 ${
         isDragging ? "opacity-50" : ""
       }`}
     >
-      <div className="text-amber-500/80">{icon}</div>
+      <div className="text-accent-500/80">{icon}</div>
       <span className="text-sm font-medium text-zinc-200">{label}</span>
     </div>
   );

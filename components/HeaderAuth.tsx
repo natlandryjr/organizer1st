@@ -59,9 +59,10 @@ export function HeaderAuth() {
           >
             Log in
           </Link>
+          <div className="h-5 w-px bg-zinc-700" />
           <Link
             href="/signup"
-            className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg bg-accent-500 px-4 py-2.5 text-sm font-medium text-zinc-950 transition-colors hover:bg-accent-400 touch-manipulation"
+            className="btn-glow flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg bg-gradient-to-r from-primary-500 to-primary-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm shadow-primary-500/20 touch-manipulation"
           >
             Sign up
           </Link>

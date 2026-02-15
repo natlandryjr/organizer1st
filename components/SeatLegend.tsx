@@ -3,7 +3,7 @@ export function SeatLegend() {
     { color: "bg-zinc-500", label: "Available" },
     { color: "bg-blue-500", label: "Selected" },
     { color: "bg-red-700", label: "Booked" },
-    { color: "bg-amber-600", label: "Held" },
+    { color: "bg-accent-600", label: "Held" },
   ];
 
   return (

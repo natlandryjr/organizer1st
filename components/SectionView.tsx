@@ -86,7 +86,7 @@ export function SectionView({
               return "cursor-not-allowed bg-zinc-600 text-zinc-400";
             }
             if (isHeld) {
-              return "cursor-not-allowed bg-amber-600/80 text-amber-100";
+              return "cursor-not-allowed bg-accent-600/80 text-accent-100";
             }
             if (isSelected) {
               return "bg-blue-500 text-white hover:bg-blue-600";

@@ -223,7 +223,7 @@ export function LayoutDesigner({
         {/* Stage - fixed at top center, not draggable */}
         {stage.width > 0 && stage.height > 0 && (
           <div
-            className="absolute flex cursor-default items-center justify-center rounded-b border-2 border-amber-500/50 bg-amber-600/80 text-amber-100"
+            className="absolute flex cursor-default items-center justify-center rounded-b border-2 border-accent-500/50 bg-accent-600/80 text-accent-100"
             style={{
               left: Math.max(2, (width - stage.width * CELL_SIZE) / 2),
               top: 2,

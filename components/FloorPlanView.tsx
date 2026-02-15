@@ -310,7 +310,7 @@ export function FloorPlanView({
           {/* Stage — centered at top */}
           {stageWidth > 0 && stageHeight > 0 && (
             <div
-              className="absolute z-10 flex items-center justify-center rounded bg-amber-700/80 text-amber-100"
+              className="absolute z-10 flex items-center justify-center rounded bg-accent-700/80 text-accent-100"
               style={{
                 left: Math.max(0, (contentWidth - stageWidth * CELL_SIZE) / 2),
                 top: stageY * CELL_SIZE,

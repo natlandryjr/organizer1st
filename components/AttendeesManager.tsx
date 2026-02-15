@@ -259,7 +259,7 @@ export function AttendeesManager({
                             type="button"
                             onClick={handleSaveEdit}
                             disabled={submitting}
-                            className="text-sm text-amber-500 hover:text-amber-400 disabled:opacity-50"
+                            className="text-sm text-accent-500 hover:text-accent-400 disabled:opacity-50"
                           >
                             Save
                           </button>
@@ -298,7 +298,7 @@ export function AttendeesManager({
                           <button
                             type="button"
                             onClick={() => startEdit(a)}
-                            className="text-sm text-amber-500 hover:text-amber-400"
+                            className="text-sm text-accent-500 hover:text-accent-400"
                           >
                             Edit
                           </button>
@@ -323,7 +323,7 @@ export function AttendeesManager({
             <button
               type="button"
               onClick={() => setAdding(true)}
-              className="text-sm text-amber-500 hover:text-amber-400"
+              className="text-sm text-accent-500 hover:text-accent-400"
             >
               + Add attendee
             </button>
@@ -371,7 +371,7 @@ export function AttendeesManager({
                     !addName.trim() ||
                     !addEmail.trim()
                   }
-                  className="rounded bg-amber-500 px-3 py-1.5 text-sm font-medium text-zinc-950 hover:bg-amber-400 disabled:opacity-50"
+                  className="rounded bg-button px-3 py-1.5 text-sm font-medium text-white hover:bg-accent-600 disabled:opacity-50"
                 >
                   {submitting ? "Adding..." : "Add attendee"}
                 </button>

@@ -33,16 +33,16 @@ export default async function DemoPage() {
   const hasDemo = org && sampleEvent;
 
   return (
-    <div className="mx-auto max-w-2xl space-y-8 px-4 py-16">
+    <div className="hero-gradient mx-auto max-w-2xl space-y-8 px-4 py-16">
       <Link
         href="/"
         className="inline-flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-300"
       >
-        ← Back to home
+        &larr; Back to home
       </Link>
 
       <div className="text-center">
-        <h1 className="text-3xl font-bold tracking-tight text-zinc-50">
+        <h1 className="text-gradient text-3xl font-bold tracking-tight">
           Try the Demo
         </h1>
         <p className="mt-2 text-zinc-400">
@@ -52,8 +52,8 @@ export default async function DemoPage() {
 
       {hasDemo && org && sampleEvent ? (
         <div className="space-y-6">
-          <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-6 py-4">
-            <p className="text-sm text-amber-200">
+          <div className="glass-card px-6 py-4 border-primary-500/20">
+            <p className="text-sm text-primary-200">
               <strong>Sample Organizer</strong> has one event ready. Choose how you want to explore:
             </p>
           </div>
@@ -61,9 +61,9 @@ export default async function DemoPage() {
           <div className="grid gap-4 sm:grid-cols-2">
             <Link
               href={`/admin5550/organizer-view/${org.id}`}
-              className="card-lift flex flex-col rounded-xl border border-zinc-800/60 bg-zinc-900/30 p-6 transition-colors hover:border-amber-500/40"
+              className="glass-card card-lift flex flex-col p-6 transition-colors hover:border-primary-500/40"
             >
-              <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/20 text-amber-400">
+              <div className="feature-icon mb-3">
                 <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                 </svg>
@@ -74,7 +74,7 @@ export default async function DemoPage() {
               <p className="mt-1 flex-1 text-sm text-zinc-400">
                 See the dashboard as an organizer: events, venues, orders, and attendee management.
               </p>
-              <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-amber-400">
+              <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-primary-400">
                 Open dashboard
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m9 5 7 7-7 7" />
@@ -84,9 +84,9 @@ export default async function DemoPage() {
 
             <Link
               href={`/events/${sampleEvent.id}`}
-              className="card-lift flex flex-col rounded-xl border border-zinc-800/60 bg-zinc-900/30 p-6 transition-colors hover:border-amber-500/40"
+              className="glass-card card-lift flex flex-col p-6 transition-colors hover:border-primary-500/40"
             >
-              <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/20 text-amber-400">
+              <div className="feature-icon mb-3">
                 <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
                 </svg>
@@ -97,7 +97,7 @@ export default async function DemoPage() {
               <p className="mt-1 flex-1 text-sm text-zinc-400">
                 Book seats, pick your spot on the seating chart, and complete a sample purchase.
               </p>
-              <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-amber-400">
+              <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-primary-400">
                 Book tickets
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m9 5 7 7-7 7" />
@@ -108,14 +108,14 @@ export default async function DemoPage() {
 
           <p className="text-center text-sm text-zinc-500">
             Want to edit events?{" "}
-            <Link href="/login" className="text-amber-400 hover:text-amber-300">
+            <Link href="/login" className="text-primary-400 hover:text-primary-300">
               Log in as demo organizer
             </Link>{" "}
             (demo@organizer1st.com / Demo1234!)
           </p>
         </div>
       ) : (
-        <div className="rounded-xl border border-zinc-800/60 bg-zinc-900/30 p-8 text-center">
+        <div className="glass-card p-8 text-center">
           <p className="text-zinc-400">
             The demo isn&apos;t set up yet. Run the seed to create the sample organizer and event:
           </p>
@@ -124,9 +124,9 @@ export default async function DemoPage() {
           </code>
           <Link
             href="/#how-it-works"
-            className="mt-6 inline-block text-sm text-amber-400 hover:text-amber-300"
+            className="mt-6 inline-block text-sm text-primary-400 hover:text-primary-300"
           >
-            Or learn how it works →
+            Or learn how it works &rarr;
           </Link>
         </div>
       )}

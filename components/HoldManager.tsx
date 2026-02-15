@@ -219,7 +219,7 @@ export function HoldManager({
                   type="button"
                   onClick={() => handleReleaseHold(hold.id)}
                   disabled={releasingId === hold.id}
-                  className="text-sm text-amber-500 hover:text-amber-400 disabled:opacity-50"
+                  className="text-sm text-accent-500 hover:text-accent-400 disabled:opacity-50"
                 >
                   {releasingId === hold.id ? "Releasing..." : "Release"}
                 </button>
@@ -233,7 +233,7 @@ export function HoldManager({
         <button
           type="button"
           onClick={() => setCreating(true)}
-          className="text-sm text-amber-500 hover:text-amber-400"
+          className="text-sm text-accent-500 hover:text-accent-400"
         >
           + Create hold
         </button>
@@ -304,7 +304,7 @@ export function HoldManager({
                 selectedSeats.length === 0 ||
                 !holdLabel.trim()
               }
-              className="rounded bg-amber-500 px-3 py-1.5 text-sm font-medium text-zinc-950 hover:bg-amber-400 disabled:opacity-50"
+              className="rounded bg-button px-3 py-1.5 text-sm font-medium text-white hover:bg-accent-600 disabled:opacity-50"
             >
               {submitting ? "Creating..." : "Create hold"}
             </button>

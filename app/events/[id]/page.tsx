@@ -117,7 +117,7 @@ export default function EventPage() {
           </svg>
         </div>
         <p className="text-lg text-zinc-400">Event not found</p>
-        <Link href="/" className="mt-4 text-sm text-amber-500 hover:text-amber-400">
+        <Link href="/" className="mt-4 text-sm text-accent-500 hover:text-accent-400">
           Back to events
         </Link>
       </div>
@@ -162,7 +162,7 @@ export default function EventPage() {
               {event.name}
             </h1>
             <div className="mt-3 flex items-center gap-2 text-zinc-400">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-amber-500/70">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-accent-500/70">
                 <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
                 <line x1="16" x2="16" y1="2" y2="6"/>
                 <line x1="8" x2="8" y1="2" y2="6"/>
@@ -175,7 +175,7 @@ export default function EventPage() {
             {maxSeats != null && (
               <div className="mt-5 max-w-sm">
                 <div className="mb-1.5 flex items-center justify-between text-sm">
-                  <span className={atCapacity ? "font-medium text-amber-400" : "text-zinc-500"}>
+                  <span className={atCapacity ? "font-medium text-accent-400" : "text-zinc-500"}>
                     {bookedCount} of {maxSeats} seats sold
                     {atCapacity ? " — Sold out" : ""}
                   </span>
@@ -187,7 +187,7 @@ export default function EventPage() {
                   <div
                     className={`h-full rounded-full transition-all duration-700 ${
                       bookedCount / maxSeats >= 0.9
-                        ? "bg-gradient-to-r from-amber-600 to-amber-400"
+                        ? "bg-gradient-to-r from-primary-600 via-accent2-500 to-accent2-400"
                         : "bg-gradient-to-r from-emerald-600 to-emerald-400"
                     }`}
                     style={{ width: `${Math.min(100, (bookedCount / maxSeats) * 100)}%` }}
@@ -198,7 +198,7 @@ export default function EventPage() {
           </div>
 
           {event.flyerUrl && (
-            <div className="relative w-full shrink-0 animate-fade-in overflow-hidden rounded-2xl border border-zinc-800/60 shadow-2xl shadow-black/40 sm:w-auto">
+            <div className="relative w-full shrink-0 animate-fade-in overflow-hidden rounded-2xl gradient-border shadow-2xl shadow-black/40 sm:w-auto">
               <img
                 src={event.flyerUrl}
                 alt={`${event.name} flyer`}
@@ -216,7 +216,7 @@ export default function EventPage() {
       </div>
 
       {/* Divider */}
-      <div className="h-px bg-gradient-to-r from-transparent via-zinc-800 to-transparent" />
+      <div className="section-divider" />
 
       {event.venueMap && (
         <SeatingChart

@@ -97,7 +97,7 @@ export default function OrdersPage() {
         </div>
       )}
 
-      <div className="mt-8 overflow-hidden rounded-xl border border-zinc-800/60 bg-zinc-900/30">
+      <div className="mt-8 overflow-hidden glass-card">
         {orders.length === 0 ? (
           <div className="px-6 py-16 text-center sm:px-8">
             <p className="text-zinc-400">No orders yet</p>
@@ -125,12 +125,12 @@ export default function OrdersPage() {
                 {orders.map((order) => (
                   <tr
                     key={order.id}
-                    className="border-b border-zinc-800/40 transition-colors hover:bg-zinc-800/20"
+                    className="border-b border-zinc-800/40 transition-colors hover:bg-primary-500/5"
                   >
                     <td className="px-4 py-3 sm:px-6 sm:py-4">
                       <Link
                         href={`/dashboard/orders/${order.id}`}
-                        className="font-mono font-medium text-amber-400 hover:text-amber-300"
+                        className="font-mono font-medium text-accent-400 hover:text-accent-300"
                       >
                         #{order.orderId}
                       </Link>

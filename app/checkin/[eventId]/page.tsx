@@ -105,7 +105,7 @@ export default function CheckInPage() {
   if (loading) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center">
-        <div className="h-12 w-12 animate-spin rounded-full border-2 border-zinc-700 border-t-amber-500" />
+        <div className="h-12 w-12 animate-spin rounded-full border-2 border-zinc-700 border-t-accent-500" />
         <p className="mt-4 text-zinc-400">Loading...</p>
       </div>
     );
@@ -119,7 +119,7 @@ export default function CheckInPage() {
         </div>
         <Link
           href="/dashboard/events"
-          className="inline-flex items-center gap-1.5 text-amber-500 hover:text-amber-400"
+          className="inline-flex items-center gap-1.5 text-accent-500 hover:text-accent-400"
         >
           ← Back to events
         </Link>
@@ -146,12 +146,12 @@ export default function CheckInPage() {
       </div>
 
       {/* Scanner area */}
-      <div className="overflow-hidden rounded-2xl border border-zinc-800/60 bg-zinc-900/50">
+      <div className="overflow-hidden glass-card">
         <div className="relative aspect-square w-full max-w-[min(100vw-2rem,400px)] mx-auto">
           <CheckInScanner onScan={handleScan} />
           {/* Scan overlay frame */}
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-            <div className="h-56 w-56 rounded-2xl border-2 border-amber-500/60 bg-transparent" />
+            <div className="h-56 w-56 rounded-2xl border-2 border-accent-500/60 bg-transparent" />
           </div>
         </div>
       </div>
@@ -159,12 +159,12 @@ export default function CheckInPage() {
       {/* Result feedback */}
       {result !== "idle" && (
         <div
-          className={`mt-6 rounded-xl border px-5 py-4 ${
+          className={`mt-6 glass-card px-5 py-4 ${
             result === "success"
-              ? "border-emerald-500/40 bg-emerald-500/10"
+              ? "!border-emerald-500/40"
               : result === "already"
-              ? "border-amber-500/40 bg-amber-500/10"
-              : "border-red-500/40 bg-red-500/10"
+              ? "!border-primary-500/40"
+              : "!border-red-500/40"
           }`}
         >
           <p
@@ -172,7 +172,7 @@ export default function CheckInPage() {
               result === "success"
                 ? "text-emerald-400"
                 : result === "already"
-                ? "text-amber-400"
+                ? "text-accent-400"
                 : "text-red-400"
             }`}
           >

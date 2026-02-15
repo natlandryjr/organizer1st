@@ -22,15 +22,25 @@ export default async function Home() {
   }
 
   return (
-    <div className="space-y-24 pb-16">
+    <div className="space-y-28 pb-16">
       {/* 1. Hero Section */}
-      <section className="hero-gradient relative -mx-4 -mt-8 px-4 pb-16 pt-20 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+      <section className="hero-gradient relative -mx-4 -mt-8 px-4 pb-20 pt-24 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 overflow-hidden">
+        {/* Decorative blurred orbs */}
+        <div className="pointer-events-none absolute -top-24 left-1/4 h-96 w-96 rounded-full bg-primary-500/10 blur-3xl animate-float" />
+        <div className="pointer-events-none absolute -top-12 right-1/4 h-80 w-80 rounded-full bg-accent2-500/8 blur-3xl animate-float" style={{ animationDelay: "3s" }} />
+
         <div className="relative mx-auto max-w-4xl text-center">
-          <h1 className="animate-fade-in text-4xl font-bold tracking-tight text-zinc-50 sm:text-5xl lg:text-6xl">
+          {/* Pill badge */}
+          <div className="animate-fade-in mb-6 inline-flex items-center gap-2 rounded-full border border-primary-500/30 bg-primary-500/10 px-4 py-1.5 text-sm font-medium text-primary-300">
+            <span className="inline-block h-2 w-2 rounded-full bg-primary-400 glow-dot" />
+            The organizer-first ticketing platform
+          </div>
+
+          <h1 className="animate-fade-in text-5xl font-bold tracking-tight text-zinc-50 sm:text-6xl lg:text-7xl">
             Stop Renting Your Revenue.{" "}
             <span className="text-gradient">Start Owning It.</span>
           </h1>
-          <p className="mt-6 animate-fade-in-up max-w-2xl mx-auto text-lg text-zinc-400 opacity-0 stagger-1 sm:text-xl">
+          <p className="mt-6 animate-fade-in-up max-w-2xl mx-auto text-lg text-zinc-400 opacity-0 stagger-1 sm:text-xl leading-relaxed">
             Organizer1st is the ticketing platform that puts you first. Get paid
             directly to your Stripe account with fair, transparent pricing. No
             holds. No delays. No excuses.
@@ -38,13 +48,13 @@ export default async function Home() {
           <div className="mt-10 flex flex-col items-center justify-center gap-4 opacity-0 animate-fade-in-up stagger-2 sm:flex-row">
             <Link
               href="/signup"
-              className="btn-glow w-full rounded-xl bg-accent-500 px-8 py-4 text-base font-semibold text-zinc-950 transition-colors hover:bg-accent-400 sm:w-auto"
+              className="btn-glow w-full rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 px-8 py-4 text-base font-semibold text-white shadow-lg shadow-primary-500/20 hover:shadow-primary-500/30 sm:w-auto"
             >
               Create Your First Event
             </Link>
             <Link
               href="/demo"
-              className="w-full rounded-xl border border-zinc-600 px-8 py-4 text-base font-semibold text-zinc-200 transition-colors hover:border-zinc-500 hover:bg-zinc-800/50 sm:w-auto"
+              className="btn-secondary w-full px-8 py-4 text-base font-semibold sm:w-auto"
             >
               See a Demo
             </Link>
@@ -53,55 +63,58 @@ export default async function Home() {
       </section>
 
       {/* 2. Social Proof Section */}
-      <section className="text-center">
-        <p className="text-sm font-medium uppercase tracking-wider text-zinc-500">
-          Trusted by independent organizers, festivals, and venues.
+      <section className="animate-fade-in-up opacity-0 stagger-3">
+        <div className="mx-auto max-w-3xl grid grid-cols-3 gap-8 text-center">
+          <div>
+            <p className="stat-value text-3xl font-bold sm:text-4xl">500+</p>
+            <p className="mt-1 text-sm text-zinc-500">Events Created</p>
+          </div>
+          <div>
+            <p className="stat-value text-3xl font-bold sm:text-4xl">50K+</p>
+            <p className="mt-1 text-sm text-zinc-500">Tickets Sold</p>
+          </div>
+          <div>
+            <p className="stat-value text-3xl font-bold sm:text-4xl">99.5%</p>
+            <p className="mt-1 text-sm text-zinc-500">Payout Rate</p>
+          </div>
+        </div>
+        <p className="mt-6 text-center text-sm font-medium uppercase tracking-wider text-zinc-600">
+          Trusted by independent organizers, festivals, and venues
         </p>
       </section>
 
       {/* 3. How It Works Section */}
       <section id="how-it-works" className="scroll-mt-24">
-        <h2 className="mb-12 text-center text-3xl font-bold tracking-tight text-zinc-50">
+        <h2 className="mb-4 text-center text-3xl font-bold tracking-tight text-zinc-50">
           How It Works
         </h2>
-        <div className="grid gap-10 sm:grid-cols-3">
-          <div className="rounded-2xl border border-zinc-800/60 bg-zinc-900/30 p-8">
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary-500/20 text-primary-400">
-              <StripeIcon />
+        <p className="mb-12 text-center text-zinc-500">Three steps to full control of your revenue</p>
+        <div className="grid gap-8 sm:grid-cols-3">
+          {[
+            { icon: <StripeIcon />, title: "Connect Stripe", desc: "Connect your Stripe account in minutes. No lengthy approvals.", step: 1 },
+            { icon: <CalendarIcon />, title: "Create Your Event", desc: "Use our powerful tools to set up your event and seating exactly how you want.", step: 2 },
+            { icon: <WalletIcon />, title: "Get Paid Directly", desc: "Ticket revenue flows directly into your Stripe account. Your money, your control.", step: 3 },
+          ].map((item) => (
+            <div key={item.step} className="glass-card card-lift p-8 text-center">
+              <div className="mx-auto mb-5 flex h-10 w-10 items-center justify-center rounded-full bg-primary-500 text-sm font-bold text-white glow-dot">
+                {item.step}
+              </div>
+              <div className="feature-icon mx-auto mb-4">
+                {item.icon}
+              </div>
+              <h3 className="text-lg font-semibold text-zinc-50">Step {item.step}: {item.title}</h3>
+              <p className="mt-2 text-zinc-400">{item.desc}</p>
             </div>
-            <h3 className="text-lg font-semibold text-zinc-50">Step 1: Connect Stripe</h3>
-            <p className="mt-2 text-zinc-400">
-              Connect your Stripe account in minutes. No lengthy approvals.
-            </p>
-          </div>
-          <div className="rounded-2xl border border-zinc-800/60 bg-zinc-900/30 p-8">
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary-500/20 text-primary-400">
-              <CalendarIcon />
-            </div>
-            <h3 className="text-lg font-semibold text-zinc-50">Step 2: Create Your Event</h3>
-            <p className="mt-2 text-zinc-400">
-              Use our powerful tools to set up your event and seating exactly how
-              you want.
-            </p>
-          </div>
-          <div className="rounded-2xl border border-zinc-800/60 bg-zinc-900/30 p-8">
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary-500/20 text-primary-400">
-              <WalletIcon />
-            </div>
-            <h3 className="text-lg font-semibold text-zinc-50">Step 3: Get Paid Directly</h3>
-            <p className="mt-2 text-zinc-400">
-              Ticket revenue flows directly into your Stripe account. Your money,
-              your control.
-            </p>
-          </div>
+          ))}
         </div>
       </section>
 
       {/* 4. Features Section */}
       <section>
-        <h2 className="mb-12 text-center text-3xl font-bold tracking-tight text-zinc-50">
+        <h2 className="mb-4 text-center text-3xl font-bold tracking-tight text-zinc-50">
           Everything You Need
         </h2>
+        <p className="mb-12 text-center text-zinc-500">Powerful tools designed for organizers who mean business</p>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {[
             {
@@ -137,9 +150,9 @@ export default async function Home() {
           ].map((feature, i) => (
             <div
               key={i}
-              className="card-lift rounded-2xl border border-zinc-800/60 bg-zinc-900/30 p-6"
+              className="glass-card card-lift p-6"
             >
-              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-accent-500/20 text-accent-400">
+              <div className="feature-icon mb-3">
                 {feature.icon}
               </div>
               <h3 className="font-semibold text-zinc-50">{feature.title}</h3>
@@ -150,41 +163,56 @@ export default async function Home() {
       </section>
 
       {/* 5. Pricing Section */}
-      <section className="rounded-2xl border border-zinc-800/60 bg-zinc-900/30 p-8 sm:p-12">
-        <h2 className="mb-8 text-center text-3xl font-bold tracking-tight text-zinc-50">
+      <section>
+        <h2 className="mb-4 text-center text-3xl font-bold tracking-tight text-zinc-50">
           Simple, Transparent Pricing
         </h2>
-        <div className="mx-auto max-w-2xl overflow-x-auto rounded-xl border border-zinc-700/60">
-          <table className="w-full min-w-[320px] text-left">
-            <thead>
-              <tr className="border-b border-zinc-700/60 bg-zinc-800/40">
-                <th className="px-6 py-4 font-semibold text-zinc-50">$50 Ticket</th>
-                <th className="px-6 py-4 font-semibold text-primary-400">Organizer1st</th>
-                <th className="px-6 py-4 font-semibold text-zinc-400">Eventbrite</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="border-b border-zinc-700/40">
-                <td className="px-6 py-4 text-zinc-400">You keep</td>
-                <td className="px-6 py-4 font-semibold text-primary-400">$49.50</td>
-                <td className="px-6 py-4 text-zinc-500">$46.36</td>
-              </tr>
-            </tbody>
-          </table>
+        <p className="mb-12 text-center text-zinc-500">Keep more of what you earn</p>
+        <div className="mx-auto max-w-3xl grid gap-6 sm:grid-cols-2">
+          {/* Organizer1st card */}
+          <div className="glass-card pricing-highlight gradient-border rounded-2xl p-8">
+            <div className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-primary-500/15 px-3 py-1 text-xs font-semibold text-primary-300">
+              Recommended
+            </div>
+            <h3 className="text-xl font-bold text-zinc-50">Organizer1st</h3>
+            <p className="mt-1 text-sm text-zinc-400">On a $50 ticket</p>
+            <div className="mt-6">
+              <span className="stat-value text-4xl font-bold">$49.50</span>
+              <span className="ml-2 text-sm text-zinc-500">you keep</span>
+            </div>
+            <p className="mt-4 text-sm text-zinc-400">A simple flat fee per ticket. That&apos;s it.</p>
+            <div className="mt-6 rounded-lg bg-warm-500/10 border border-warm-500/20 px-4 py-2.5">
+              <p className="text-sm font-medium text-warm-400">
+                Save $3.14 per ticket vs Eventbrite
+              </p>
+            </div>
+          </div>
+          {/* Eventbrite card */}
+          <div className="glass-card rounded-2xl p-8 opacity-70">
+            <div className="mb-2 h-6" />
+            <h3 className="text-xl font-bold text-zinc-400">Eventbrite</h3>
+            <p className="mt-1 text-sm text-zinc-500">On a $50 ticket</p>
+            <div className="mt-6">
+              <span className="text-4xl font-bold text-zinc-500">$46.36</span>
+              <span className="ml-2 text-sm text-zinc-600">you keep</span>
+            </div>
+            <p className="mt-4 text-sm text-zinc-500">Service fee + payment processing + platform tax.</p>
+            <div className="mt-6 rounded-lg bg-zinc-800/50 px-4 py-2.5">
+              <p className="text-sm text-zinc-500">$3.64 in fees per ticket</p>
+            </div>
+          </div>
         </div>
-        <p className="mt-6 text-center text-zinc-400">
-          A simple flat fee per ticket. That&apos;s it.
-        </p>
       </section>
 
       {/* 6. Final CTA Section */}
-      <section className="hero-gradient rounded-2xl border border-zinc-800/60 bg-zinc-900/20 px-8 py-16 text-center sm:px-12">
-        <h2 className="text-3xl font-bold tracking-tight text-zinc-50 sm:text-4xl">
+      <section className="mesh-gradient rounded-2xl border border-zinc-800/40 px-8 py-20 text-center sm:px-12">
+        <h2 className="text-gradient text-3xl font-bold tracking-tight sm:text-4xl">
           Ready to Take Back Control?
         </h2>
+        <p className="mt-4 text-zinc-400">Join hundreds of organizers who keep more of their revenue.</p>
         <Link
           href="/signup"
-          className="btn-glow mt-8 inline-block rounded-xl bg-accent-500 px-10 py-4 text-lg font-semibold text-zinc-950 transition-colors hover:bg-accent-400"
+          className="btn-glow mt-8 inline-block rounded-xl bg-gradient-to-r from-primary-500 to-accent2-600 px-10 py-4 text-lg font-semibold text-white shadow-lg shadow-primary-500/20"
         >
           Sign Up for Free
         </Link>
@@ -193,10 +221,10 @@ export default async function Home() {
       {/* Upcoming Events (if any) */}
       {events.length > 0 && (
         <section>
-          <div className="mb-6 rounded-xl border border-amber-500/30 bg-amber-500/10 px-6 py-4">
-            <p className="text-sm text-amber-200">
+          <div className="mb-6 glass-card px-6 py-4 border-primary-500/20">
+            <p className="text-sm text-primary-200">
               <strong>Try it out:</strong> Book seats as an attendee, or{" "}
-              <Link href="/login" className="underline hover:text-amber-100">
+              <Link href="/login" className="underline hover:text-primary-100">
                 log in as the demo organizer
               </Link>{" "}
               (demo@organizer1st.com / Demo1234!) to edit events, manage attendees, and explore the dashboard.
@@ -210,7 +238,7 @@ export default async function Home() {
               <li key={event.id}>
                 <Link
                   href={`/events/${event.id}`}
-                  className="card-lift group block overflow-hidden rounded-2xl border border-zinc-800/60 bg-zinc-900/30 backdrop-blur-sm"
+                  className="card-lift group block overflow-hidden rounded-2xl glass-card"
                 >
                   {event.flyerUrl ? (
                     <div className="relative aspect-[4/3] w-full overflow-hidden bg-zinc-800">
@@ -220,6 +248,10 @@ export default async function Home() {
                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/95 via-zinc-950/50 to-zinc-950/20" />
+                      {/* Date badge */}
+                      <div className="absolute top-3 left-3 rounded-lg bg-zinc-950/70 backdrop-blur-sm px-3 py-1.5 text-xs font-semibold text-zinc-200">
+                        {new Date(event.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                      </div>
                       <div className="absolute bottom-0 left-0 right-0 p-5">
                         <h3 className="text-xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
                           {event.name}
@@ -232,6 +264,9 @@ export default async function Home() {
                   ) : (
                     <div className="relative flex aspect-[4/3] w-full items-center justify-center overflow-hidden bg-gradient-to-br from-zinc-800 to-zinc-900">
                       <CalendarIcon className="h-12 w-12 text-zinc-600" />
+                      <div className="absolute top-3 left-3 rounded-lg bg-zinc-950/70 backdrop-blur-sm px-3 py-1.5 text-xs font-semibold text-zinc-200">
+                        {new Date(event.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                      </div>
                       <div className="absolute bottom-0 left-0 right-0 p-5">
                         <h3 className="text-lg font-semibold text-white">
                           {event.name}
@@ -248,7 +283,7 @@ export default async function Home() {
                         {event.description}
                       </p>
                     )}
-                    <span className="btn-glow mt-4 inline-flex gap-1.5 rounded-full bg-accent-500/10 px-4 py-1.5 text-sm font-semibold text-accent-400 transition-colors group-hover:bg-accent-500/20">
+                    <span className="btn-glow mt-4 inline-flex gap-1.5 rounded-full bg-gradient-to-r from-primary-500/15 to-accent2-500/10 px-4 py-1.5 text-sm font-semibold text-primary-400 transition-colors group-hover:from-primary-500/25 group-hover:to-accent2-500/15">
                       Get Tickets
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover:translate-x-0.5">
                         <path d="m9 18 6-6-6-6" />

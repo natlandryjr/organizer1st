@@ -150,7 +150,7 @@ export default function OrganizerViewPage() {
                           href={`/events/${ev.id}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="rounded bg-amber-500/20 px-3 py-1 text-sm font-medium text-amber-400 hover:bg-amber-500/30"
+                          className="rounded bg-accent-500/20 px-3 py-1 text-sm font-medium text-accent-400 hover:bg-accent-500/30"
                         >
                           Attendee view
                         </Link>
@@ -232,7 +232,7 @@ export default function OrganizerViewPage() {
                     key={o.id}
                     className="border-b border-zinc-800/40 hover:bg-zinc-800/20"
                   >
-                    <td className="px-4 py-3 font-mono text-sm text-amber-400 sm:px-6">
+                    <td className="px-4 py-3 font-mono text-sm text-accent-400 sm:px-6">
                       #{o.orderId}
                     </td>
                     <td className="px-4 py-3 text-zinc-50 sm:px-6">

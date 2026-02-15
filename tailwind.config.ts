@@ -37,7 +37,20 @@ const config: Config = {
           800: "#111827",
           900: "#030712",
         },
-        accent: {
+        accent2: {
+          DEFAULT: "#7C3AED",
+          50: "#F5F3FF",
+          100: "#EDE9FE",
+          200: "#DDD6FE",
+          300: "#C4B5FD",
+          400: "#A78BFA",
+          500: "#7C3AED",
+          600: "#6D28D9",
+          700: "#5B21B6",
+          800: "#4C1D95",
+          900: "#2E1065",
+        },
+        warm: {
           DEFAULT: "#F59E0B",
           50: "#FFFBEB",
           100: "#FEF3C7",
@@ -50,6 +63,20 @@ const config: Config = {
           800: "#92400E",
           900: "#78350F",
         },
+        button: "#2563EB",
+        accent: {
+          DEFAULT: "#2563EB",
+          50: "#EFF6FF",
+          100: "#DBEAFE",
+          200: "#BFDBFE",
+          300: "#93C5FD",
+          400: "#60A5FA",
+          500: "#2563EB",
+          600: "#1D4ED8",
+          700: "#1D40AF",
+          800: "#1E3A8A",
+          900: "#172554",
+        },
       },
       animation: {
         "fade-in": "fadeIn 0.6s ease-out forwards",
@@ -57,6 +84,10 @@ const config: Config = {
         "slide-up": "slideUp 0.4s ease-out forwards",
         "shimmer": "shimmer 2s linear infinite",
         "pulse-glow": "pulseGlow 3s ease-in-out infinite",
+        "gradient-shift": "gradientShift 8s ease infinite",
+        "float": "float 6s ease-in-out infinite",
+        "glow-pulse": "glowPulse 2s ease-in-out infinite",
+        "scale-in": "scaleIn 0.5s cubic-bezier(0.16,1,0.3,1) forwards",
       },
       keyframes: {
         fadeIn: {
@@ -78,6 +109,22 @@ const config: Config = {
         pulseGlow: {
           "0%, 100%": { opacity: "0.4" },
           "50%": { opacity: "0.8" },
+        },
+        gradientShift: {
+          "0%, 100%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+        },
+        float: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-12px)" },
+        },
+        glowPulse: {
+          "0%, 100%": { opacity: "0.6", transform: "scale(1)" },
+          "50%": { opacity: "1", transform: "scale(1.05)" },
+        },
+        scaleIn: {
+          from: { opacity: "0", transform: "scale(0.9)" },
+          to: { opacity: "1", transform: "scale(1)" },
         },
       },
     },

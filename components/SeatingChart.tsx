@@ -221,11 +221,11 @@ export function SeatingChart({
       )}
 
       <div className="sticky bottom-0 z-10 overflow-hidden rounded-2xl border border-zinc-800/60 bg-zinc-900/95 p-4 shadow-[0_-8px_30px_rgba(0,0,0,0.5)] backdrop-blur-xl sm:p-6">
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent-500/30 to-transparent" />
         <h3 className="mb-3 flex items-center gap-2 text-lg font-semibold text-zinc-50">
           Checkout
           {selectedSeats.length > 0 && (
-            <span className="rounded-full bg-amber-500 px-2.5 py-0.5 text-xs font-bold text-zinc-950">
+            <span className="rounded-full bg-button px-2.5 py-0.5 text-xs font-bold text-white">
               {selectedSeats.length}
             </span>
           )}
@@ -294,7 +294,7 @@ export function SeatingChart({
                         setPromoError(null);
                       }}
                       placeholder="Promo code"
-                      className="min-h-[44px] flex-1 rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-3 text-zinc-100 placeholder-zinc-600 focus:border-amber-500/60 focus:outline-none focus:ring-1 focus:ring-amber-500/40 sm:py-2.5"
+                      className="min-h-[44px] flex-1 rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-3 text-zinc-100 placeholder-zinc-600 focus:border-accent-500/60 focus:outline-none focus:ring-1 focus:ring-accent-500/40 sm:py-2.5"
                     />
                     <button
                       type="button"
@@ -320,7 +320,7 @@ export function SeatingChart({
                           setPromoError("Failed to validate promo code");
                         }
                       }}
-                      className="min-h-[44px] shrink-0 rounded-xl border border-amber-500/50 bg-amber-500/20 px-4 py-3 text-sm font-medium text-amber-400 transition-colors hover:bg-amber-500/30 touch-manipulation sm:py-2.5"
+                      className="min-h-[44px] shrink-0 rounded-xl border border-accent-500/50 bg-accent-500/20 px-4 py-3 text-sm font-medium text-accent-400 transition-colors hover:bg-accent-500/30 touch-manipulation sm:py-2.5"
                     >
                       Apply
                     </button>
@@ -352,7 +352,7 @@ export function SeatingChart({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Your name"
-                className="min-h-[44px] w-full rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-3 text-zinc-100 placeholder-zinc-600 focus:border-amber-500/60 focus:outline-none focus:ring-1 focus:ring-amber-500/40 sm:py-2.5"
+                className="min-h-[44px] w-full rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-3 text-zinc-100 placeholder-zinc-600 focus:border-accent-500/60 focus:outline-none focus:ring-1 focus:ring-accent-500/40 sm:py-2.5"
               />
             </div>
             <div>
@@ -368,18 +368,18 @@ export function SeatingChart({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="your@email.com"
-                className="min-h-[44px] w-full rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-3 text-zinc-100 placeholder-zinc-600 focus:border-amber-500/60 focus:outline-none focus:ring-1 focus:ring-amber-500/40 sm:py-2.5"
+                className="min-h-[44px] w-full rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-3 text-zinc-100 placeholder-zinc-600 focus:border-accent-500/60 focus:outline-none focus:ring-1 focus:ring-accent-500/40 sm:py-2.5"
               />
             </div>
           </div>
         )}
         {atCapacity && (
-          <p className="mb-4 text-sm font-medium text-amber-400">
+          <p className="mb-4 text-sm font-medium text-accent-400">
             This event is sold out.
           </p>
         )}
         {wouldExceedCapacity && !atCapacity && (
-          <p className="mb-4 text-sm text-amber-400">
+          <p className="mb-4 text-sm text-accent-400">
             Only {maxSeats! - bookedCount} seat
             {maxSeats! - bookedCount !== 1 ? "s" : ""} remaining. Reduce your
             selection.
@@ -445,7 +445,7 @@ export function SeatingChart({
               setIsLoading(false);
             }
           }}
-          className="btn-glow min-h-[48px] w-full rounded-xl bg-amber-500 px-4 py-3 font-semibold text-zinc-950 transition-colors hover:bg-amber-400 disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-600 touch-manipulation"
+          className="btn-glow min-h-[48px] w-full rounded-xl bg-button px-4 py-3 font-semibold text-white transition-colors hover:bg-accent-600 disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-600 touch-manipulation"
         >
           {isLoading ? "Redirecting..." : "Confirm Booking"}
         </button>
