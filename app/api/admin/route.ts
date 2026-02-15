@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { DEFAULT_ORGANIZATION_ID } from "@/lib/constants";
 
 type SectionConfig = {
   name: string;
@@ -135,6 +136,7 @@ export async function POST(request: NextRequest) {
           description: eventDescription,
           maxSeats: maxSeats != null && maxSeats > 0 ? maxSeats : null,
           flyerUrl: flyerUrl && flyerUrl.trim() ? flyerUrl.trim() : null,
+          organizationId: DEFAULT_ORGANIZATION_ID,
         },
       });
 
@@ -151,6 +153,15 @@ export async function POST(request: NextRequest) {
         },
       });
 
+      const defaultTicketType = await tx.ticketType.create({
+        data: {
+          eventId: event.id,
+          name: "General Admission",
+          price: 5000,
+          quantity: null,
+        },
+      });
+
       for (const sectionConfig of sections) {
         const { name, rows = 10, cols = 10, posX = 0, posY = 0, color } = sectionConfig;
 
@@ -163,6 +174,7 @@ export async function POST(request: NextRequest) {
             posY,
             color: color && /^#[0-9A-Fa-f]{6}$/.test(color) ? color : null,
             venueMapId: venueMap.id,
+            ticketTypeId: defaultTicketType.id,
           },
         });
 
@@ -186,6 +198,7 @@ export async function POST(request: NextRequest) {
             posY,
             color: color && /^#[0-9A-Fa-f]{6}$/.test(color) ? color : null,
             venueMapId: venueMap.id,
+            ticketTypeId: defaultTicketType.id,
           },
         });
 

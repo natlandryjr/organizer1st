@@ -9,14 +9,90 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model Organization {
+  id                   String    @id @default(cuid())
+  name                 String
+  stripeAccountId      String?
+  users                User[]
+  events               Event[]
+  uploads              Upload[]
+  venues               Venue[]
+  stripeConnectPending StripeConnectPending?
+}
+
+model Venue {
+  id             String   @id @default(cuid())
+  name           String
+  layout         Json     // { canvasWidth, canvasHeight, components: [...] }
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  events         Event[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model StripeConnectPending {
+  id             String       @id @default(cuid())
+  accountId      String       @unique
+  organizationId String       @unique
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id             String       @id @default(cuid())
+  email          String       @unique
+  password       String       // Hashed password
+  name           String
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
 model Event {
-  id          String    @id @default(cuid())
-  name        String
-  date        DateTime
-  description String
-  maxSeats    Int?      // Maximum capacity; null = no limit
-  flyerUrl    String?   // Event flyer/poster image URL
-  venueMap    VenueMap? // An event has one venue map
+  id             String      @id @default(cuid())
+  name           String
+  date           DateTime
+  description    String
+  location       String?     // Venue or address
+  status         EventStatus @default(DRAFT)
+  maxSeats       Int?        // Maximum capacity; null = no limit
+  flyerUrl       String?     // Event flyer/poster image URL
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  venueId        String?     // Optional: selected venue template
+  venue          Venue?     @relation(fields: [venueId], references: [id], onDelete: SetNull)
+  venueMap       VenueMap?
+  ticketTypes    TicketType[]
+  promoCodes     PromoCode[]
+}
+
+model TicketType {
+  id        String  @id @default(cuid())
+  eventId   String
+  event     Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  name      String  // e.g. "VIP", "General Admission"
+  price     Int     // Price in cents
+  quantity  Int?    // Max available; null = unlimited (use seat count for seated)
+  sections  Section[]
+  tables    Table[]
+}
+
+model PromoCode {
+  id           String       @id @default(cuid())
+  eventId      String
+  event        Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  code         String       // e.g. "EARLYBIRD"
+  discountType DiscountType // PERCENT or FLAT
+  discountValue Int         // Percentage (0-100) or cents
+}
+
+enum DiscountType {
+  PERCENT
+  FLAT
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
 }
 
 model VenueMap {
@@ -35,28 +111,32 @@ model VenueMap {
 }
 
 model Section {
-  id          String   @id @default(cuid())
-  name        String
-  rows        Int      @default(10)
-  cols        Int      @default(10)
-  posX        Int      @default(0)
-  posY        Int      @default(0)
-  color       String?  // Hex color e.g. #4F46E5
-  venueMap    VenueMap @relation(fields: [venueMapId], references: [id])
-  venueMapId  String
-  seats       Seat[]
+  id           String     @id @default(cuid())
+  name         String
+  rows         Int        @default(10)
+  cols         Int        @default(10)
+  posX         Int        @default(0)
+  posY         Int        @default(0)
+  color        String?    // Hex color e.g. #4F46E5
+  venueMap     VenueMap   @relation(fields: [venueMapId], references: [id])
+  venueMapId   String
+  ticketTypeId String?
+  ticketType   TicketType? @relation(fields: [ticketTypeId], references: [id], onDelete: SetNull)
+  seats        Seat[]
 }
 
 model Table {
-  id          String   @id @default(cuid())
-  name        String
-  seatCount   Int
-  posX        Int      @default(0)
-  posY        Int      @default(0)
-  color       String?  // Hex color e.g. #4F46E5
-  venueMap    VenueMap @relation(fields: [venueMapId], references: [id])
-  venueMapId  String
-  seats       Seat[]
+  id           String     @id @default(cuid())
+  name         String
+  seatCount    Int
+  posX         Int        @default(0)
+  posY         Int        @default(0)
+  color        String?    // Hex color e.g. #4F46E5
+  venueMap     VenueMap   @relation(fields: [venueMapId], references: [id])
+  venueMapId   String
+  ticketTypeId String?
+  ticketType   TicketType? @relation(fields: [ticketTypeId], references: [id], onDelete: SetNull)
+  seats        Seat[]
 }
 
 model Seat {
@@ -88,11 +168,13 @@ model Hold {
 }
 
 model Upload {
-  id        String   @id @default(cuid())
-  filename  String
-  mimeType  String
-  data      Bytes
-  createdAt DateTime @default(now())
+  id             String       @id @default(cuid())
+  filename       String
+  mimeType       String
+  data           Bytes
+  createdAt      DateTime     @default(now())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 }
 
 model Booking {

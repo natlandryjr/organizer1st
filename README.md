@@ -1,4 +1,4 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+fly deployThis is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
 
@@ -55,7 +55,7 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
    ```bash
    fly secrets set STRIPE_SECRET_KEY=sk_live_...
    fly secrets set NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_...
-   fly secrets set NEXT_PUBLIC_APP_URL=https://sweetjazz-ticketing.fly.dev
+   fly secrets set NEXT_PUBLIC_APP_URL=https://organizer1st.fly.dev
    ```
 
 5. **Deploy:**
@@ -63,4 +63,4 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
    fly deploy
    ```
 
-Migrations run automatically on each deploy via `release_command`. The app will be at `https://sweetjazz-ticketing.fly.dev` (or your chosen app name).
+Migrations run automatically on each deploy via `release_command`. The app will be at `https://organizer1st.fly.dev` (or your chosen app name).

@@ -15,11 +15,13 @@ export async function GET(
           include: {
             sections: {
               include: {
+                ticketType: true,
                 seats: { include: { hold: true } },
               },
             },
             tables: {
               include: {
+                ticketType: true,
                 seats: { include: { hold: true } },
               },
             },

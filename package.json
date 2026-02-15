@@ -1,6 +1,7 @@
 {
-  "name": "sweetjazz-ticketing",
+  "name": "organizer1st",
   "version": "0.1.0",
+  "description": "The ticketing platform that puts organizers first.",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -11,14 +12,22 @@
   "dependencies": {
     "@prisma/client": "^6.19.2",
     "@stripe/stripe-js": "^8.7.0",
+    "bcryptjs": "^3.0.3",
+    "jose": "^6.1.3",
     "next": "14.2.35",
+    "papaparse": "^5.5.3",
     "prisma": "^6.19.2",
     "react": "^18",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18",
+    "recharts": "^3.7.0",
     "stripe": "^20.3.1"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
+    "@types/papaparse": "^5.5.2",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",

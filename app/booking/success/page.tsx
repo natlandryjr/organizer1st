@@ -35,6 +35,7 @@ function getSeatLabel(seat: Seat): string {
 function BookingSuccessContent() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
+  const eventId = searchParams.get("event_id");
 
   const [booking, setBooking] = useState<Booking | null>(null);
   const [loading, setLoading] = useState(true);
@@ -52,7 +53,7 @@ function BookingSuccessContent() {
         const res = await fetch("/api/book/confirm", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ session_id: sessionId }),
+          body: JSON.stringify({ session_id: sessionId, event_id: eventId }),
         });
 
         const data = await res.json();
@@ -70,7 +71,7 @@ function BookingSuccessContent() {
     }
 
     confirmBooking();
-  }, [sessionId]);
+  }, [sessionId, eventId]);
 
   if (loading) {
     return (

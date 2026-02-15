@@ -7,6 +7,12 @@ import { TableView } from "./TableView";
 import { FloorPlanView } from "./FloorPlanView";
 import { SeatLegend } from "./SeatLegend";
 
+type TicketType = {
+  id: string;
+  name: string;
+  price: number; // cents
+};
+
 type Section = {
   id: string;
   name: string;
@@ -15,6 +21,7 @@ type Section = {
   posX?: number;
   posY?: number;
   venueMapId: string;
+  ticketType?: TicketType | null;
   seats: Seat[];
 };
 
@@ -25,6 +32,7 @@ type Table = {
   posX?: number;
   posY?: number;
   venueMapId: string;
+  ticketType?: TicketType | null;
   seats: Seat[];
 };
 
@@ -60,7 +68,19 @@ function usePositionedLayout(venueMap: VenueMap): boolean {
   return hasStage || hasSectionPositions || hasTablePositions;
 }
 
-const PRICE_PER_SEAT = 50;
+const DEFAULT_PRICE_CENTS = 5000; // $50 fallback
+
+function getSeatPriceCents(seat: Seat, venueMap: VenueMap): number {
+  if (seat.sectionId) {
+    const section = venueMap.sections.find((s) => s.id === seat.sectionId);
+    return section?.ticketType?.price ?? DEFAULT_PRICE_CENTS;
+  }
+  if (seat.tableId) {
+    const table = venueMap.tables.find((t) => t.id === seat.tableId);
+    return table?.ticketType?.price ?? DEFAULT_PRICE_CENTS;
+  }
+  return DEFAULT_PRICE_CENTS;
+}
 
 function getSeatLabel(seat: Seat, venueMap: VenueMap): string {
   if (seat.sectionId) {
@@ -82,6 +102,13 @@ export function SeatingChart({
   const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [promoCode, setPromoCode] = useState("");
+  const [promoApplied, setPromoApplied] = useState<{
+    code: string;
+    discountType: "PERCENT" | "FLAT";
+    discountValue: number;
+  } | null>(null);
+  const [promoError, setPromoError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const selectedSeatIds = new Set(selectedSeats.map((s) => s.id));
@@ -96,7 +123,24 @@ export function SeatingChart({
     });
   }, []);
 
-  const totalPrice = selectedSeats.length * PRICE_PER_SEAT;
+  const subtotalCents = selectedSeats.reduce(
+    (sum, s) => sum + getSeatPriceCents(s, venueMap),
+    0
+  );
+  let discountCents = 0;
+  if (promoApplied) {
+    if (promoApplied.discountType === "PERCENT") {
+      discountCents = Math.round(
+        subtotalCents * Math.min(100, promoApplied.discountValue) / 100
+      );
+    } else {
+      discountCents = Math.min(subtotalCents, promoApplied.discountValue);
+    }
+  }
+  const totalCents = Math.max(0, subtotalCents - discountCents);
+  const subtotalDollars = subtotalCents / 100;
+  const discountDollars = discountCents / 100;
+  const totalDollars = totalCents / 100;
   const useLayout = usePositionedLayout(venueMap);
   const atCapacity =
     maxSeats != null && maxSeats > 0 && bookedCount >= maxSeats;
@@ -190,12 +234,15 @@ export function SeatingChart({
           <>
             <ul className="mb-4 space-y-1 text-sm text-zinc-300">
               {selectedSeats.map((seat) => (
-                <li key={seat.id} className="flex items-center justify-between">
-                  <span>{getSeatLabel(seat, venueMap)}</span>
+                <li key={seat.id} className="flex items-center justify-between gap-2">
+                  <span className="min-w-0 flex-1 truncate">{getSeatLabel(seat, venueMap)}</span>
+                  <span className="shrink-0 text-zinc-400">
+                    ${(getSeatPriceCents(seat, venueMap) / 100).toFixed(2)}
+                  </span>
                   <button
                     type="button"
                     onClick={() => handleSeatSelect(seat)}
-                    className="ml-2 text-zinc-500 hover:text-red-400"
+                    className="shrink-0 text-zinc-500 hover:text-red-400"
                     aria-label={`Remove ${getSeatLabel(seat, venueMap)}`}
                   >
                     &times;
@@ -203,16 +250,87 @@ export function SeatingChart({
                 </li>
               ))}
             </ul>
-            <p className="mb-4 text-zinc-400">
-              Total:{" "}
-              <span className="text-2xl font-bold text-zinc-50">
-                ${totalPrice.toFixed(2)}
-              </span>{" "}
-              <span className="text-sm">
-                ({selectedSeats.length} seat
-                {selectedSeats.length !== 1 ? "s" : ""} &times; ${PRICE_PER_SEAT})
-              </span>
-            </p>
+            <div className="mb-4 space-y-1 text-sm">
+              <p className="flex justify-between text-zinc-400">
+                <span>Subtotal</span>
+                <span>${subtotalDollars.toFixed(2)}</span>
+              </p>
+              {promoApplied && (
+                <p className="flex justify-between text-emerald-400">
+                  <span>Discount ({promoApplied.code})</span>
+                  <span>-${discountDollars.toFixed(2)}</span>
+                </p>
+              )}
+              <p className="flex justify-between text-lg font-semibold text-zinc-50">
+                <span>Total</span>
+                <span>${totalDollars.toFixed(2)}</span>
+              </p>
+            </div>
+            {selectedSeats.length > 0 && (
+              <div className="mb-4">
+                {promoApplied ? (
+                  <div className="flex items-center justify-between rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2">
+                    <span className="text-sm text-emerald-400">
+                      Promo applied: {promoApplied.code}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPromoApplied(null);
+                        setPromoError(null);
+                      }}
+                      className="text-xs text-zinc-400 hover:text-zinc-200"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={promoCode}
+                      onChange={(e) => {
+                        setPromoCode(e.target.value.toUpperCase());
+                        setPromoError(null);
+                      }}
+                      placeholder="Promo code"
+                      className="flex-1 rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-2.5 text-zinc-100 placeholder-zinc-600 focus:border-amber-500/60 focus:outline-none focus:ring-1 focus:ring-amber-500/40"
+                    />
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        const code = promoCode.trim().toUpperCase();
+                        if (!code) return;
+                        setPromoError(null);
+                        try {
+                          const res = await fetch(
+                            `/api/events/${venueMap.eventId}/promo?code=${encodeURIComponent(code)}`
+                          );
+                          const data = await res.json();
+                          if (!res.ok) {
+                            setPromoError(data.error ?? "Invalid promo code");
+                            return;
+                          }
+                          setPromoApplied({
+                            code: data.code,
+                            discountType: data.discountType,
+                            discountValue: data.discountValue,
+                          });
+                        } catch {
+                          setPromoError("Failed to validate promo code");
+                        }
+                      }}
+                      className="rounded-xl border border-amber-500/50 bg-amber-500/20 px-4 py-2.5 text-sm font-medium text-amber-400 transition-colors hover:bg-amber-500/30"
+                    >
+                      Apply
+                    </button>
+                  </div>
+                )}
+                {promoError && (
+                  <p className="mt-1 text-xs text-red-400">{promoError}</p>
+                )}
+              </div>
+            )}
           </>
         ) : (
           <p className="mb-4 text-sm text-zinc-500">
@@ -294,6 +412,7 @@ export function SeatingChart({
                   eventId: venueMap.eventId,
                   name: name.trim(),
                   email: email.trim(),
+                  ...(promoApplied && { promoCode: promoApplied.code }),
                 }),
               });
               const data = await res.json();

@@ -4,14 +4,16 @@ import Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
 import { SeatStatus } from "@prisma/client";
 
-const PRICE_PER_SEAT_CENTS = 5000; // $50.00
+const PLATFORM_FEE_PERCENT = 0.01; // 1%
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+const DEFAULT_PRICE_CENTS = 5000; // $50 fallback when no ticket type
 
 type CheckoutPayload = {
   seatIds: string[];
   eventId: string;
   name?: string;
   email?: string;
+  promoCode?: string;
 };
 
 export async function POST(request: NextRequest) {
@@ -29,7 +31,7 @@ export async function POST(request: NextRequest) {
 
     const body = (await request.json()) as CheckoutPayload;
 
-    const { seatIds, eventId, name, email } = body;
+    const { seatIds, eventId, name, email, promoCode } = body;
 
     if (!seatIds || !Array.isArray(seatIds) || seatIds.length === 0) {
       return NextResponse.json(
@@ -50,7 +52,11 @@ export async function POST(request: NextRequest) {
     // Verify seats exist and are available (not booked or held)
     const seats = await prisma.seat.findMany({
       where: { id: { in: seatIds } },
-      include: { hold: true },
+      include: {
+        hold: true,
+        section: { include: { ticketType: true } },
+        table: { include: { ticketType: true } },
+      },
     });
     if (seats.length !== seatIds.length) {
       return NextResponse.json(
@@ -76,13 +82,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check max seating / overselling
+    // Check max seating / overselling and get organization Stripe account
     const event = await prisma.event.findUnique({
       where: { id: eventId },
-      include: { venueMap: true },
+      include: {
+        venueMap: true,
+        organization: { select: { stripeAccountId: true } },
+      },
     });
     if (!event) {
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
+    }
+    const stripeAccountId = event.organization?.stripeAccountId;
+    if (!stripeAccountId) {
+      return NextResponse.json(
+        { error: "Event organizer has not connected Stripe. Please contact the organizer." },
+        { status: 400 }
+      );
     }
     if (event.maxSeats != null && event.maxSeats > 0 && event.venueMap) {
       const bookedCount = await prisma.seat.count({
@@ -104,31 +120,71 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      line_items: [
-        {
-          price_data: {
-            currency: "usd",
-            product_data: {
-              name: "Event Ticket",
-              description: `${quantity} seat${quantity !== 1 ? "s" : ""} @ $50 each`,
+    // Compute price per seat from ticket type (section or table)
+    let subtotalCents = 0;
+    for (const seat of seats) {
+      const ticketType = seat.section?.ticketType ?? seat.table?.ticketType;
+      const priceCents = ticketType?.price ?? DEFAULT_PRICE_CENTS;
+      subtotalCents += priceCents;
+    }
+
+    // Validate and apply promo code
+    let discountCents = 0;
+    let appliedPromoCode: string | null = null;
+    if (promoCode?.trim()) {
+      const promo = await prisma.promoCode.findFirst({
+        where: { eventId, code: promoCode.trim().toUpperCase() },
+      });
+      if (promo) {
+        appliedPromoCode = promo.code;
+        if (promo.discountType === "PERCENT") {
+          discountCents = Math.round(
+            subtotalCents * Math.min(100, Math.max(0, promo.discountValue)) / 100
+          );
+        } else {
+          discountCents = Math.min(subtotalCents, promo.discountValue);
+        }
+      }
+    }
+
+    const totalAmountCents = Math.max(0, subtotalCents - discountCents);
+    const applicationFeeAmount = Math.round(totalAmountCents * PLATFORM_FEE_PERCENT);
+
+    const session = await stripe.checkout.sessions.create(
+      {
+        mode: "payment",
+        line_items: [
+          {
+            price_data: {
+              currency: "usd",
+              product_data: {
+                name: "Event Ticket",
+                description:
+                  discountCents > 0
+                    ? `${quantity} seat${quantity !== 1 ? "s" : ""} (promo applied)`
+                    : `${quantity} seat${quantity !== 1 ? "s" : ""}`,
+              },
+              unit_amount: totalAmountCents,
             },
-            unit_amount: PRICE_PER_SEAT_CENTS,
+            quantity: 1,
           },
-          quantity,
+        ],
+        payment_intent_data: {
+          application_fee_amount: applicationFeeAmount,
         },
-      ],
-      success_url: `${BASE_URL}/booking/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${BASE_URL}/events/${eventId}`,
-      metadata: {
-        seatIds: JSON.stringify(seatIds),
-        eventId,
-        ...(name && { attendeeName: name }),
-        ...(email && { attendeeEmail: email }),
+        success_url: `${BASE_URL}/booking/success?session_id={CHECKOUT_SESSION_ID}&event_id=${eventId}`,
+        cancel_url: `${BASE_URL}/events/${eventId}`,
+        metadata: {
+          seatIds: JSON.stringify(seatIds),
+          eventId,
+          ...(name && { attendeeName: name }),
+          ...(email && { attendeeEmail: email }),
+          ...(appliedPromoCode && { promoCode: appliedPromoCode }),
+        },
+        ...(email && { customer_email: email }),
       },
-      ...(email && { customer_email: email }),
-    });
+      { stripeAccount: stripeAccountId }
+    );
 
     return NextResponse.json({
       sessionId: session.id,

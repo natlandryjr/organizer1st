@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { DEFAULT_ORGANIZATION_ID } from "@/lib/constants";
+import { verifyToken, getCookieName } from "@/lib/auth";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
@@ -29,11 +31,21 @@ export async function POST(request: NextRequest) {
 
     const bytes = await file.arrayBuffer();
 
+    let organizationId = DEFAULT_ORGANIZATION_ID;
+    const token = request.cookies.get(getCookieName())?.value;
+    if (token) {
+      const payload = await verifyToken(token);
+      if (payload) {
+        organizationId = payload.organizationId;
+      }
+    }
+
     const upload = await prisma.upload.create({
       data: {
         filename: file.name,
         mimeType: file.type,
         data: Buffer.from(bytes),
+        organizationId,
       },
     });
 

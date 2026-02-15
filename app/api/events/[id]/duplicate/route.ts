@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { DEFAULT_ORGANIZATION_ID } from "@/lib/constants";
 
 function generateSectionSeatNumbers(rows: number, cols: number): string[] {
   const seatNumbers: string[] = [];
@@ -28,6 +29,8 @@ export async function POST(
             tables: true,
           },
         },
+        ticketTypes: true,
+        promoCodes: true,
       },
     });
 
@@ -43,8 +46,33 @@ export async function POST(
           description: source.description,
           maxSeats: source.maxSeats,
           flyerUrl: source.flyerUrl,
+          organizationId: source.organizationId,
         },
       });
+
+      const ticketTypeIdMap = new Map<string, string>();
+      for (const tt of source.ticketTypes) {
+        const created = await tx.ticketType.create({
+          data: {
+            eventId: event.id,
+            name: tt.name,
+            price: tt.price,
+            quantity: tt.quantity,
+          },
+        });
+        ticketTypeIdMap.set(tt.id, created.id);
+      }
+
+      for (const pc of source.promoCodes) {
+        await tx.promoCode.create({
+          data: {
+            eventId: event.id,
+            code: pc.code,
+            discountType: pc.discountType,
+            discountValue: pc.discountValue,
+          },
+        });
+      }
 
       if (source.venueMap) {
         const vm = source.venueMap;
@@ -72,6 +100,9 @@ export async function POST(
               posY: sec.posY,
               color: sec.color,
               venueMapId: venueMap.id,
+              ticketTypeId: sec.ticketTypeId
+                ? ticketTypeIdMap.get(sec.ticketTypeId) ?? null
+                : null,
             },
           });
 
@@ -93,6 +124,9 @@ export async function POST(
               posY: tab.posY,
               color: tab.color,
               venueMapId: venueMap.id,
+              ticketTypeId: tab.ticketTypeId
+                ? ticketTypeIdMap.get(tab.ticketTypeId) ?? null
+                : null,
             },
           });
 

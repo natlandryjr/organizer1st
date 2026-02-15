@@ -15,8 +15,8 @@ export async function POST(request: NextRequest) {
 
     const stripe = new Stripe(stripeSecretKey);
 
-    const body = (await request.json()) as { session_id: string };
-    const { session_id } = body;
+    const body = (await request.json()) as { session_id: string; event_id?: string };
+    const { session_id, event_id } = body;
 
     if (!session_id || typeof session_id !== "string" || session_id.trim() === "") {
       return NextResponse.json(
@@ -25,7 +25,31 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const session = await stripe.checkout.sessions.retrieve(session_id);
+    // For Stripe Connect, session is on the connected account - we need event_id to get stripeAccountId
+    let stripeAccountId: string | null = null;
+    if (event_id) {
+      const event = await prisma.event.findUnique({
+        where: { id: event_id },
+        select: { organization: { select: { stripeAccountId: true } } },
+      });
+      stripeAccountId = event?.organization?.stripeAccountId ?? null;
+    }
+
+    let session: Stripe.Checkout.Session;
+    try {
+      if (stripeAccountId) {
+        session = await stripe.checkout.sessions.retrieve(session_id, {
+          stripeAccount: stripeAccountId,
+        });
+      } else {
+        session = await stripe.checkout.sessions.retrieve(session_id);
+      }
+    } catch {
+      return NextResponse.json(
+        { error: "Invalid or expired session" },
+        { status: 400 }
+      );
+    }
 
     if (session.payment_status !== "paid") {
       return NextResponse.json(
@@ -34,15 +58,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const metadata = session.metadata;
-    if (!metadata?.seatIds) {
+    const sessionMetadata = session.metadata;
+    if (!sessionMetadata?.seatIds) {
       return NextResponse.json(
         { error: "Invalid session: missing booking data" },
         { status: 400 }
       );
     }
 
-    const eventId = metadata.eventId as string | undefined;
+    const eventId = sessionMetadata.eventId as string | undefined;
     if (!eventId) {
       return NextResponse.json(
         { error: "Invalid session: missing event" },
@@ -52,7 +76,7 @@ export async function POST(request: NextRequest) {
 
     let seatIds: string[];
     try {
-      seatIds = JSON.parse(metadata.seatIds) as string[];
+      seatIds = JSON.parse(sessionMetadata.seatIds) as string[];
     } catch {
       return NextResponse.json(
         { error: "Invalid session: invalid seat data" },
@@ -60,8 +84,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const name = (metadata.attendeeName as string)?.trim() || "";
-    const email = (metadata.attendeeEmail as string)?.trim() || "";
+    const name = (sessionMetadata.attendeeName as string)?.trim() || "";
+    const email = (sessionMetadata.attendeeEmail as string)?.trim() || "";
 
     if (!name || !email) {
       return NextResponse.json(
