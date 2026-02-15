@@ -1,8 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { LayoutDesigner } from "@/components/LayoutDesigner";
+
+type ExistingEvent = {
+  id: string;
+  name: string;
+  date: string;
+};
 
 type SectionConfig = {
   name: string;
@@ -39,6 +45,7 @@ export default function AdminPage() {
   const [eventDescription, setEventDescription] = useState("");
   const [maxSeats, setMaxSeats] = useState<string>("");
   const [flyerUrl, setFlyerUrl] = useState("");
+  const [uploading, setUploading] = useState(false);
   const [mapName, setMapName] = useState("");
   const [gridCols, setGridCols] = useState(24);
   const [gridRows, setGridRows] = useState(48);
@@ -51,6 +58,32 @@ export default function AdminPage() {
   const [tables, setTables] = useState<TableConfig[]>([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [existingEvents, setExistingEvents] = useState<ExistingEvent[]>([]);
+  const [duplicating, setDuplicating] = useState<string | null>(null);
+
+  function loadEvents() {
+    fetch("/api/events")
+      .then((r) => r.ok ? r.json() : [])
+      .then((data) => setExistingEvents(data))
+      .catch(() => {});
+  }
+
+  useEffect(() => { loadEvents(); }, []);
+
+  async function handleDuplicate(eventId: string) {
+    setDuplicating(eventId);
+    try {
+      const res = await fetch(`/api/events/${eventId}/duplicate`, { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to duplicate");
+      loadEvents();
+      setMessage({ type: "success", text: `Duplicated as "${data.event.name}"` });
+    } catch (err) {
+      setMessage({ type: "error", text: err instanceof Error ? err.message : "Duplicate failed" });
+    } finally {
+      setDuplicating(null);
+    }
+  }
   function addSection() {
     setSections((s) => [...s, { name: "", rows: 5, cols: 10, posX: 0, posY: SECTION_ZONE_START, color: COLOR_PALETTE[s.length % COLOR_PALETTE.length] }]);
   }
@@ -161,6 +194,44 @@ export default function AdminPage() {
         </Link>
       </div>
 
+      {existingEvents.length > 0 && (
+        <div className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-6 space-y-3">
+          <h3 className="text-lg font-medium text-zinc-300">Existing events</h3>
+          <ul className="divide-y divide-zinc-800">
+            {existingEvents.map((ev) => (
+              <li key={ev.id} className="flex items-center justify-between py-3">
+                <div>
+                  <span className="text-sm font-medium text-zinc-200">{ev.name}</span>
+                  <span className="ml-3 text-xs text-zinc-500">
+                    {new Date(ev.date).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
+                  </span>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleDuplicate(ev.id)}
+                    disabled={duplicating === ev.id}
+                    className="rounded bg-zinc-800 px-3 py-1 text-sm text-zinc-400 transition-colors hover:bg-zinc-700 hover:text-zinc-200 disabled:opacity-50"
+                  >
+                    {duplicating === ev.id ? "Copying..." : "Duplicate"}
+                  </button>
+                  <Link
+                    href={`/admin5550/edit/${ev.id}`}
+                    className="rounded bg-zinc-700 px-3 py-1 text-sm text-zinc-300 transition-colors hover:bg-zinc-600 hover:text-zinc-100"
+                  >
+                    Edit
+                  </Link>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-6 space-y-4">
           <h3 className="text-lg font-medium text-zinc-300">Event details</h3>
@@ -211,17 +282,65 @@ export default function AdminPage() {
             </p>
           </div>
           <div>
-            <label className="mb-1 block text-sm text-zinc-400">Event flyer image URL (optional)</label>
-            <input
-              type="url"
-              value={flyerUrl}
-              onChange={(e) => setFlyerUrl(e.target.value)}
-              className="w-full rounded border border-zinc-700 bg-zinc-800 px-3 py-2 text-zinc-100 placeholder-zinc-500 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
-              placeholder="https://example.com/flyer.jpg"
-            />
-            <p className="mt-1 text-xs text-zinc-500">
-              URL to event poster or flyer image. Host on Imgur, Cloudinary, or your site.
-            </p>
+            <label className="mb-1 block text-sm text-zinc-400">Event flyer image (optional)</label>
+            <div className="space-y-3">
+              <div>
+                <label className="flex cursor-pointer items-center gap-3 rounded border border-dashed border-zinc-600 bg-zinc-800/50 px-4 py-3 transition-colors hover:border-amber-500/50 hover:bg-zinc-800">
+                  <svg className="h-5 w-5 shrink-0 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span className="text-sm text-zinc-400">
+                    {uploading ? "Uploading..." : "Choose image file..."}
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    className="hidden"
+                    disabled={uploading}
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      setUploading(true);
+                      try {
+                        const formData = new FormData();
+                        formData.append("file", file);
+                        const res = await fetch("/api/upload", { method: "POST", body: formData });
+                        const data = await res.json();
+                        if (!res.ok) throw new Error(data.error || "Upload failed");
+                        setFlyerUrl(data.url);
+                      } catch (err) {
+                        setMessage({ type: "error", text: err instanceof Error ? err.message : "Upload failed" });
+                      } finally {
+                        setUploading(false);
+                        e.target.value = "";
+                      }
+                    }}
+                  />
+                </label>
+              </div>
+              {flyerUrl && (
+                <div className="flex items-center gap-3">
+                  <img src={flyerUrl} alt="Flyer preview" className="h-20 w-auto rounded border border-zinc-700 object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => setFlyerUrl("")}
+                    className="text-sm text-red-400 hover:text-red-300"
+                  >
+                    Remove
+                  </button>
+                </div>
+              )}
+              <div>
+                <p className="mb-1 text-xs text-zinc-500">Or paste an image URL:</p>
+                <input
+                  type="url"
+                  value={flyerUrl}
+                  onChange={(e) => setFlyerUrl(e.target.value)}
+                  className="w-full rounded border border-zinc-700 bg-zinc-800 px-3 py-2 text-zinc-100 placeholder-zinc-500 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                  placeholder="https://example.com/flyer.jpg"
+                />
+              </div>
+            </div>
           </div>
         </div>
 

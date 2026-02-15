@@ -74,7 +74,8 @@ function BookingSuccessContent() {
 
   if (loading) {
     return (
-      <div className="py-12 text-center">
+      <div className="flex flex-col items-center py-20 text-center">
+        <div className="mb-4 h-12 w-12 animate-spin rounded-full border-2 border-zinc-700 border-t-amber-500" />
         <p className="text-zinc-400">Confirming your booking...</p>
       </div>
     );
@@ -82,14 +83,26 @@ function BookingSuccessContent() {
 
   if (error) {
     return (
-      <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-zinc-50">Booking Error</h1>
-        <p className="text-red-400">{error}</p>
+      <div className="mx-auto max-w-lg space-y-6 py-12 animate-fade-in">
+        <div className="flex items-center gap-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10">
+            <svg className="h-6 w-6 text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+              <circle cx={12} cy={12} r={10} />
+              <line x1="15" y1="9" x2="9" y2="15" />
+              <line x1="9" y1="9" x2="15" y2="15" />
+            </svg>
+          </div>
+          <h1 className="text-2xl font-bold text-zinc-50">Booking Error</h1>
+        </div>
+        <p className="rounded-xl border border-red-800/30 bg-red-900/10 p-4 text-red-400">{error}</p>
         <Link
           href="/"
-          className="inline-block text-amber-500 hover:text-amber-400"
+          className="inline-flex items-center gap-1.5 text-amber-500 hover:text-amber-400"
         >
-          Return to home
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="m15 18-6-6 6-6"/>
+          </svg>
+          Return to events
         </Link>
       </div>
     );
@@ -100,47 +113,85 @@ function BookingSuccessContent() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <svg className="h-10 w-10 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-          <circle cx={12} cy={12} r={10} />
-          <path d="m9 12 2 2 4-4" />
-        </svg>
-        <h1 className="text-2xl font-bold text-zinc-50">
-          Booking confirmed!
+    <div className="mx-auto max-w-lg space-y-8 py-8 animate-fade-in">
+      {/* Success header */}
+      <div className="text-center">
+        <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-emerald-500/10 ring-1 ring-emerald-500/20">
+          <svg className="h-10 w-10 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            <circle cx={12} cy={12} r={10} />
+            <path d="m9 12 2 2 4-4" />
+          </svg>
+        </div>
+        <h1 className="text-3xl font-bold text-zinc-50">
+          You&apos;re all set!
         </h1>
-      </div>
-      <p className="text-zinc-400">
-        Thank you, <span className="text-zinc-200">{booking.attendeeName}</span>! A confirmation has been sent to{" "}
-        <span className="text-zinc-300">{booking.attendeeEmail}</span>.
-      </p>
-      <div className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-4 space-y-3">
-        <p className="text-sm text-zinc-500">
-          Booking reference: <span className="font-mono text-zinc-300">#{booking.id.slice(-8)}</span>
+        <p className="mt-2 text-zinc-400">
+          Thank you, <span className="font-medium text-zinc-200">{booking.attendeeName}</span>!
+          A confirmation has been sent to{" "}
+          <span className="text-zinc-300">{booking.attendeeEmail}</span>.
         </p>
-        <h2 className="text-lg font-semibold text-zinc-300">
-          Confirmed seats
-        </h2>
-        <ul className="space-y-1 text-zinc-300">
-          {booking.seats.map((seat) => (
-            <li key={seat.id}>{getSeatLabel(seat)}</li>
-          ))}
+      </div>
+
+      {/* Booking details card */}
+      <div className="overflow-hidden rounded-2xl border border-zinc-800/60 bg-zinc-900/30">
+        <div className="border-b border-zinc-800/60 px-5 py-3">
+          <p className="text-xs text-zinc-500">
+            Booking reference: <span className="font-mono text-zinc-300">#{booking.id.slice(-8)}</span>
+          </p>
+        </div>
+        <div className="p-5 space-y-4">
+          <h2 className="text-sm font-medium uppercase tracking-wider text-zinc-500">
+            Your seats
+          </h2>
+          <ul className="space-y-2">
+            {booking.seats.map((seat) => (
+              <li key={seat.id} className="flex items-center gap-3 text-zinc-300">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-amber-500/10 text-xs font-semibold text-amber-400">
+                  {seat.seatNumber}
+                </span>
+                {getSeatLabel(seat)}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      {/* What's next card */}
+      <div className="rounded-2xl border border-zinc-800/60 bg-zinc-900/30 p-5">
+        <h3 className="mb-3 text-sm font-medium text-zinc-300">What&apos;s next?</h3>
+        <ul className="space-y-2 text-sm text-zinc-500">
+          <li className="flex items-start gap-2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0 text-amber-500/60">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            Check your email for your booking confirmation
+          </li>
+          <li className="flex items-start gap-2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0 text-amber-500/60">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            Arrive at least 15 minutes before the event
+          </li>
+          <li className="flex items-start gap-2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0 text-amber-500/60">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            Present your confirmation email at the door
+          </li>
         </ul>
       </div>
-      <div className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-4">
-        <h3 className="mb-2 text-sm font-medium text-zinc-300">What&apos;s next?</h3>
-        <ul className="space-y-1 text-sm text-zinc-500">
-          <li>Check your email for your booking confirmation</li>
-          <li>Arrive at least 15 minutes before the event</li>
-          <li>Present your confirmation email at the door</li>
-        </ul>
+
+      <div className="text-center">
+        <Link
+          href="/"
+          className="btn-glow inline-flex items-center gap-2 rounded-full bg-amber-500 px-6 py-2.5 font-semibold text-zinc-950 transition-colors hover:bg-amber-400"
+        >
+          Browse more events
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="m9 18 6-6-6-6"/>
+          </svg>
+        </Link>
       </div>
-      <Link
-        href="/"
-        className="inline-block rounded-lg bg-amber-500 px-4 py-2 font-semibold text-zinc-950 transition-colors hover:bg-amber-400"
-      >
-        Browse more events
-      </Link>
     </div>
   );
 }
@@ -149,7 +200,8 @@ export default function BookingSuccessPage() {
   return (
     <Suspense
       fallback={
-        <div className="py-12 text-center">
+        <div className="flex flex-col items-center py-20 text-center">
+          <div className="mb-4 h-12 w-12 animate-spin rounded-full border-2 border-zinc-700 border-t-amber-500" />
           <p className="text-zinc-400">Loading...</p>
         </div>
       }

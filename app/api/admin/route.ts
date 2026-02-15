@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
     const {
       mapName,
       gridCols = 24,
-      gridRows = 24,
+      gridRows: gridRowsInput = 24,
       stage = {},
       sections = [],
       tables = [],
@@ -92,6 +92,40 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Auto-layout: compute initial positions for sections/tables if not provided
+    const stageH = stage.height ?? 0;
+    const TABLE_STAGE_MARGIN = 3;
+    const TABLE_ZONE_ROWS = 8;
+    const sectionStartY = stageH + TABLE_STAGE_MARGIN + TABLE_ZONE_ROWS;
+
+    // Assign default table positions (spread across table zone)
+    let tableCol = 2;
+    for (const t of tables) {
+      if (!t.posX && !t.posY) {
+        t.posX = Math.min(tableCol, gridCols - 1);
+        t.posY = stageH + TABLE_STAGE_MARGIN + 2;
+        tableCol += 4;
+      }
+    }
+
+    // Stack sections vertically if they all have default (0,0) positions
+    let nextSectionY = sectionStartY;
+    for (const s of sections) {
+      if (!s.posX && !s.posY) {
+        s.posX = 0;
+        s.posY = nextSectionY;
+        nextSectionY += (s.rows || 10) + 1; // +1 row gap between sections
+      }
+    }
+
+    // Compute minimum gridRows to fit all content
+    let minRows = sectionStartY;
+    for (const s of sections) {
+      const bottom = (s.posY || 0) + (s.rows || 10);
+      if (bottom > minRows) minRows = bottom;
+    }
+    const gridRows = Math.max(gridRowsInput, minRows + 2);
 
     const result = await prisma.$transaction(async (tx) => {
       const event = await tx.event.create({

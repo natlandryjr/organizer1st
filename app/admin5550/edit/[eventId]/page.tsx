@@ -60,6 +60,8 @@ type VenueMap = {
 type Event = {
   id: string;
   name: string;
+  date: string;
+  description: string;
   maxSeats: number | null;
   flyerUrl: string | null;
   venueMap: VenueMap | null;
@@ -74,6 +76,16 @@ const TABS: { id: TabId; label: string }[] = [
   { id: "attendees", label: "Attendees" },
 ];
 
+function toDatetimeLocal(iso: string): string {
+  const d = new Date(iso);
+  const y = d.getFullYear();
+  const mo = String(d.getMonth() + 1).padStart(2, "0");
+  const da = String(d.getDate()).padStart(2, "0");
+  const h = String(d.getHours()).padStart(2, "0");
+  const mi = String(d.getMinutes()).padStart(2, "0");
+  return `${y}-${mo}-${da}T${h}:${mi}`;
+}
+
 export default function EditLayoutPage() {
   const params = useParams();
   const eventId = params.eventId as string;
@@ -82,6 +94,7 @@ export default function EditLayoutPage() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [activeTab, setActiveTab] = useState<TabId>("settings");
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -174,6 +187,9 @@ export default function EditLayoutPage() {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
+            name: event.name,
+            date: event.date,
+            description: event.description,
             maxSeats: event.maxSeats ?? null,
             flyerUrl: event.flyerUrl ?? null,
           }),
@@ -260,6 +276,40 @@ export default function EditLayoutPage() {
           <>
             <h3 className="text-lg font-medium text-zinc-300">Event settings</h3>
             <div>
+              <label className="mb-1 block text-sm text-zinc-400">Event name</label>
+              <input
+                type="text"
+                value={event.name}
+                onChange={(e) => setEvent({ ...event, name: e.target.value })}
+                required
+                className="w-full rounded border border-zinc-600 bg-zinc-800 px-2 py-1.5 text-sm text-zinc-100"
+                placeholder="Jazz Night"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm text-zinc-400">Date & time</label>
+              <input
+                type="datetime-local"
+                value={event.date ? toDatetimeLocal(event.date) : ""}
+                onChange={(e) =>
+                  setEvent({ ...event, date: new Date(e.target.value).toISOString() })
+                }
+                required
+                className="w-full rounded border border-zinc-600 bg-zinc-800 px-2 py-1.5 text-sm text-zinc-100"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm text-zinc-400">Description</label>
+              <textarea
+                value={event.description}
+                onChange={(e) => setEvent({ ...event, description: e.target.value })}
+                required
+                rows={3}
+                className="w-full rounded border border-zinc-600 bg-zinc-800 px-2 py-1.5 text-sm text-zinc-100 placeholder-zinc-500"
+                placeholder="An evening of live jazz..."
+              />
+            </div>
+            <div>
               <label className="mb-1 block text-sm text-zinc-400">
                 Max seating (optional)
               </label>
@@ -282,20 +332,71 @@ export default function EditLayoutPage() {
             </div>
             <div>
               <label className="mb-1 block text-sm text-zinc-400">
-                Event flyer image URL (optional)
+                Event flyer image (optional)
               </label>
-              <input
-                type="url"
-                value={event.flyerUrl ?? ""}
-                onChange={(e) =>
-                  setEvent({
-                    ...event,
-                    flyerUrl: e.target.value.trim() || null,
-                  })
-                }
-                className="w-full rounded border border-zinc-600 bg-zinc-800 px-2 py-1.5 text-sm text-zinc-100"
-                placeholder="https://example.com/flyer.jpg"
-              />
+              <div className="space-y-3">
+                <div>
+                  <label className="flex cursor-pointer items-center gap-3 rounded border border-dashed border-zinc-600 bg-zinc-800/50 px-4 py-3 transition-colors hover:border-amber-500/50 hover:bg-zinc-800">
+                    <svg className="h-5 w-5 shrink-0 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span className="text-sm text-zinc-400">
+                      {uploading ? "Uploading..." : "Choose image file..."}
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif"
+                      className="hidden"
+                      disabled={uploading}
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        setUploading(true);
+                        try {
+                          const formData = new FormData();
+                          formData.append("file", file);
+                          const res = await fetch("/api/upload", { method: "POST", body: formData });
+                          const data = await res.json();
+                          if (!res.ok) throw new Error(data.error || "Upload failed");
+                          setEvent({ ...event, flyerUrl: data.url });
+                        } catch (err) {
+                          setMessage({ type: "error", text: err instanceof Error ? err.message : "Upload failed" });
+                        } finally {
+                          setUploading(false);
+                          e.target.value = "";
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+                {event.flyerUrl && (
+                  <div className="flex items-center gap-3">
+                    <img src={event.flyerUrl} alt="Flyer preview" className="h-20 w-auto rounded border border-zinc-700 object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => setEvent({ ...event, flyerUrl: null })}
+                      className="text-sm text-red-400 hover:text-red-300"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                )}
+                <div>
+                  <p className="mb-1 text-xs text-zinc-500">Or paste an image URL:</p>
+                  <input
+                    type="url"
+                    value={event.flyerUrl ?? ""}
+                    onChange={(e) =>
+                      setEvent({
+                        ...event,
+                        flyerUrl: e.target.value.trim() || null,
+                      })
+                    }
+                    className="w-full rounded border border-zinc-600 bg-zinc-800 px-2 py-1.5 text-sm text-zinc-100"
+                    placeholder="https://example.com/flyer.jpg"
+                  />
+                </div>
+              </div>
             </div>
           </>
         )}

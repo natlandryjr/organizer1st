@@ -87,6 +87,14 @@ model Hold {
   seats     Seat[]
 }
 
+model Upload {
+  id        String   @id @default(cuid())
+  filename  String
+  mimeType  String
+  data      Bytes
+  createdAt DateTime @default(now())
+}
+
 model Booking {
   id            String    @id @default(cuid())
   attendeeName  String

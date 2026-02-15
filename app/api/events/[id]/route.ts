@@ -48,11 +48,26 @@ export async function PATCH(
 ) {
   try {
     const { id } = await params;
-    const body = (await request.json()) as { maxSeats?: number | null; flyerUrl?: string | null };
+    const body = (await request.json()) as {
+      name?: string;
+      date?: string;
+      description?: string;
+      maxSeats?: number | null;
+      flyerUrl?: string | null;
+    };
 
     const event = await prisma.event.update({
       where: { id },
       data: {
+        ...(body.name !== undefined && {
+          name: body.name.trim(),
+        }),
+        ...(body.date !== undefined && {
+          date: new Date(body.date),
+        }),
+        ...(body.description !== undefined && {
+          description: body.description.trim(),
+        }),
         maxSeats:
           body.maxSeats === null || body.maxSeats === undefined
             ? null

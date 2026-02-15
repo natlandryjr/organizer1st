@@ -176,11 +176,12 @@ export function SeatingChart({
         </>
       )}
 
-      <div className="sticky bottom-0 z-10 rounded-lg border border-zinc-800 bg-zinc-900 p-6 shadow-[0_-4px_20px_rgba(0,0,0,0.5)]">
+      <div className="sticky bottom-0 z-10 overflow-hidden rounded-2xl border border-zinc-800/60 bg-zinc-900/95 p-6 shadow-[0_-8px_30px_rgba(0,0,0,0.5)] backdrop-blur-xl">
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
         <h3 className="mb-3 flex items-center gap-2 text-lg font-semibold text-zinc-50">
           Checkout
           {selectedSeats.length > 0 && (
-            <span className="rounded-full bg-amber-500 px-2 py-0.5 text-xs font-bold text-zinc-950">
+            <span className="rounded-full bg-amber-500 px-2.5 py-0.5 text-xs font-bold text-zinc-950">
               {selectedSeats.length}
             </span>
           )}
@@ -233,7 +234,7 @@ export function SeatingChart({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Your name"
-                className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-2 text-zinc-100 placeholder-zinc-500 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                className="w-full rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-2.5 text-zinc-100 placeholder-zinc-600 focus:border-amber-500/60 focus:outline-none focus:ring-1 focus:ring-amber-500/40"
               />
             </div>
             <div>
@@ -249,7 +250,7 @@ export function SeatingChart({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="your@email.com"
-                className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-2 text-zinc-100 placeholder-zinc-500 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                className="w-full rounded-xl border border-zinc-700/60 bg-zinc-800/60 px-4 py-2.5 text-zinc-100 placeholder-zinc-600 focus:border-amber-500/60 focus:outline-none focus:ring-1 focus:ring-amber-500/40"
               />
             </div>
           </div>
@@ -325,7 +326,7 @@ export function SeatingChart({
               setIsLoading(false);
             }
           }}
-          className="w-full rounded-lg bg-amber-500 px-4 py-3 font-semibold text-zinc-950 transition-colors hover:bg-amber-400 disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-500"
+          className="btn-glow w-full rounded-xl bg-amber-500 px-4 py-3 font-semibold text-zinc-950 transition-colors hover:bg-amber-400 disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-600"
         >
           {isLoading ? "Redirecting..." : "Confirm Booking"}
         </button>

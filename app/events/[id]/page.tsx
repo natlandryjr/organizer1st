@@ -94,21 +94,32 @@ export default function EventPage() {
     return (
       <div className="space-y-8 animate-pulse">
         <div>
-          <div className="h-8 w-2/3 rounded bg-zinc-800" />
-          <div className="mt-3 h-4 w-1/3 rounded bg-zinc-800" />
-          <div className="mt-4 space-y-2">
-            <div className="h-4 w-full rounded bg-zinc-800" />
-            <div className="h-4 w-5/6 rounded bg-zinc-800" />
+          <div className="h-10 w-2/3 rounded-lg bg-zinc-800/60" />
+          <div className="mt-4 h-5 w-1/3 rounded bg-zinc-800/40" />
+          <div className="mt-6 space-y-2">
+            <div className="h-4 w-full rounded bg-zinc-800/30" />
+            <div className="h-4 w-5/6 rounded bg-zinc-800/30" />
           </div>
         </div>
-        <div className="h-64 w-full rounded-lg bg-zinc-800" />
+        <div className="h-72 w-full rounded-2xl bg-zinc-800/20" />
       </div>
     );
   }
 
   if (!event) {
     return (
-      <div className="py-12 text-center text-zinc-400">Event not found.</div>
+      <div className="flex flex-col items-center py-20 text-center">
+        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-zinc-800/50">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-zinc-600">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.3-4.3"/>
+          </svg>
+        </div>
+        <p className="text-lg text-zinc-400">Event not found</p>
+        <Link href="/" className="mt-4 text-sm text-amber-500 hover:text-amber-400">
+          Back to events
+        </Link>
+      </div>
     );
   }
 
@@ -126,34 +137,53 @@ export default function EventPage() {
   const atCapacity = maxSeats != null && bookedCount >= maxSeats;
 
   return (
-    <div className="space-y-8">
-      <div>
-        <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+    <div className="space-y-8 animate-fade-in">
+      {/* Back link */}
+      <Link
+        href="/"
+        className="inline-flex items-center gap-1.5 text-sm text-zinc-500 transition-colors hover:text-zinc-300"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="m15 18-6-6 6-6"/>
+        </svg>
+        All events
+      </Link>
+
+      {/* Event header */}
+      <div className="hero-gradient -mx-4 px-4 pb-2 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+        <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between gap-4">
-              <h1 className="text-3xl font-bold tracking-tight text-zinc-50">
-                {event.name}
-              </h1>
+            <h1 className="text-3xl font-bold tracking-tight text-zinc-50 sm:text-4xl">
+              {event.name}
+            </h1>
+            <div className="mt-3 flex items-center gap-2 text-zinc-400">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-amber-500/70">
+                <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+                <line x1="16" x2="16" y1="2" y2="6"/>
+                <line x1="8" x2="8" y1="2" y2="6"/>
+                <line x1="3" x2="21" y1="10" y2="10"/>
+              </svg>
+              {formattedDate}
             </div>
-            <p className="mt-2 text-zinc-400">{formattedDate}</p>
-            <p className="mt-4 text-zinc-300">{event.description}</p>
+            <p className="mt-4 max-w-2xl leading-relaxed text-zinc-300/90">{event.description}</p>
+
             {maxSeats != null && (
-              <div className="mt-3">
-                <div className="mb-1 flex items-center justify-between text-sm">
+              <div className="mt-5 max-w-sm">
+                <div className="mb-1.5 flex items-center justify-between text-sm">
                   <span className={atCapacity ? "font-medium text-amber-400" : "text-zinc-500"}>
                     {bookedCount} of {maxSeats} seats sold
                     {atCapacity ? " — Sold out" : ""}
                   </span>
-                  <span className="text-zinc-600 text-xs">
+                  <span className="font-mono text-xs text-zinc-600">
                     {Math.round((bookedCount / maxSeats) * 100)}%
                   </span>
                 </div>
-                <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-800">
+                <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-800/60">
                   <div
-                    className={`h-full rounded-full transition-all ${
+                    className={`h-full rounded-full transition-all duration-700 ${
                       bookedCount / maxSeats >= 0.9
-                        ? "bg-amber-500"
-                        : "bg-green-500"
+                        ? "bg-gradient-to-r from-amber-600 to-amber-400"
+                        : "bg-gradient-to-r from-emerald-600 to-emerald-400"
                     }`}
                     style={{ width: `${Math.min(100, (bookedCount / maxSeats) * 100)}%` }}
                   />
@@ -161,17 +191,27 @@ export default function EventPage() {
               </div>
             )}
           </div>
+
           {event.flyerUrl && (
-            <div className="shrink-0">
+            <div className="relative shrink-0 animate-fade-in overflow-hidden rounded-2xl border border-zinc-800/60 shadow-2xl shadow-black/40">
               <img
                 src={event.flyerUrl}
                 alt={`${event.name} flyer`}
-                className="max-h-80 w-auto rounded-lg border border-zinc-700 object-cover shadow-lg"
+                className="max-h-80 w-auto object-cover"
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/40 to-zinc-950/10" />
+              <div className="absolute bottom-0 left-0 right-0 p-4">
+                <h2 className="text-lg font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                  {event.name}
+                </h2>
+              </div>
             </div>
           )}
         </div>
       </div>
+
+      {/* Divider */}
+      <div className="h-px bg-gradient-to-r from-transparent via-zinc-800 to-transparent" />
 
       {event.venueMap && (
         <SeatingChart

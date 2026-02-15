@@ -3,7 +3,11 @@
 import { useRef, useState, useCallback, useEffect } from "react";
 
 const CELL_SIZE = 32;
-const TABLE_ZONE_ROWS = 8; // Tables go in rows [stageHeight, stageHeight+TABLE_ZONE_ROWS)
+const TABLE_ZONE_ROWS = 8; // Tables go in rows [stageHeight+margin, stageHeight+margin+TABLE_ZONE_ROWS)
+// FloorPlanView renders tables as ~208px widgets centered on the grid point (CELL_SIZE=48).
+// The table top edge is posY*48 - 104. For it to clear the stage bottom (stageH*48),
+// we need posY >= stageH + ceil(104/48) = stageH + 3 grid cells of margin.
+const TABLE_STAGE_MARGIN = 3;
 
 export type SectionConfig = {
   name: string;
@@ -62,24 +66,21 @@ export function LayoutDesigner({
   const containerRef = useRef<HTMLDivElement>(null);
   const [drag, setDrag] = useState<DragState | null>(null);
 
-  const getGridPos = useCallback(
-    (clientX: number, clientY: number): { col: number; row: number } => {
-      const el = containerRef.current;
-      if (!el) return { col: 0, row: 0 };
-      const rect = el.getBoundingClientRect();
-      const x = clientX - rect.left;
-      const y = clientY - rect.top;
-      const col = Math.max(0, Math.min(gridCols - 1, Math.floor(x / CELL_SIZE)));
-      const row = Math.max(0, Math.min(gridRows - 1, Math.floor(y / CELL_SIZE)));
-      return { col, row };
-    },
-    [gridCols, gridRows]
-  );
-
   const stageHeight = Math.max(1, stage.height);
-  const tableZoneMinY = stageHeight;
-  const tableZoneMaxY = stageHeight + TABLE_ZONE_ROWS - 1;
-  const sectionMinY = stageHeight + TABLE_ZONE_ROWS;
+  const tableZoneMinY = stageHeight + TABLE_STAGE_MARGIN;
+  const tableZoneMaxY = stageHeight + TABLE_STAGE_MARGIN + TABLE_ZONE_ROWS - 1;
+  const sectionMinY = stageHeight + TABLE_STAGE_MARGIN + TABLE_ZONE_ROWS;
+
+  // Compute the minimum grid rows needed to fit all content without overlap
+  const minRequiredRows = (() => {
+    let maxRow = sectionMinY; // at minimum, leave room for stage + tables zone
+    for (const sec of sections) {
+      const bottom = Math.max(sec.posY, sectionMinY) + sec.rows;
+      if (bottom > maxRow) maxRow = bottom;
+    }
+    return maxRow + 2; // add a little padding
+  })();
+  const effectiveGridRows = Math.max(gridRows, minRequiredRows);
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent, type: "section" | "table", index: number) => {
@@ -140,13 +141,13 @@ export function LayoutDesigner({
       const deltaCol = Math.round((clientX - drag.startX) / CELL_SIZE);
       const deltaRow = Math.round((clientY - drag.startY) / CELL_SIZE);
       const newX = Math.max(0, Math.min(gridCols - 1, drag.startPosX + deltaCol));
-      const newY = Math.max(0, Math.min(gridRows - 1, drag.startPosY + deltaRow));
+      const newY = Math.max(0, Math.min(effectiveGridRows - 1, drag.startPosY + deltaRow));
 
       if (drag.type === "section") {
         const sec = sections[drag.index];
         const maxX = Math.max(0, gridCols - sec.cols);
         const minY = sectionMinY;
-        const maxY = Math.max(sectionMinY, gridRows - sec.rows);
+        const maxY = Math.max(sectionMinY, effectiveGridRows - sec.rows);
         onSectionChange(
           drag.index,
           Math.min(newX, maxX),
@@ -154,7 +155,7 @@ export function LayoutDesigner({
         );
       } else {
         const minY = tableZoneMinY;
-        const maxY = Math.min(tableZoneMaxY, gridRows - 1);
+        const maxY = Math.min(tableZoneMaxY, effectiveGridRows - 1);
         onTableChange(
           drag.index,
           newX,
@@ -162,7 +163,7 @@ export function LayoutDesigner({
         );
       }
     },
-    [drag, gridCols, gridRows, sections, sectionMinY, tableZoneMinY, tableZoneMaxY, onSectionChange, onTableChange]
+    [drag, gridCols, effectiveGridRows, sections, sectionMinY, tableZoneMinY, tableZoneMaxY, onSectionChange, onTableChange]
   );
 
   const handleMouseMove = useCallback(
@@ -198,7 +199,7 @@ export function LayoutDesigner({
   }, [handleMouseMove, handleTouchMove, handleEnd]);
 
   const width = gridCols * CELL_SIZE;
-  const height = gridRows * CELL_SIZE;
+  const height = effectiveGridRows * CELL_SIZE;
 
   return (
     <div className="overflow-auto rounded-lg border border-zinc-700 bg-zinc-900/30 p-4">
@@ -219,12 +220,12 @@ export function LayoutDesigner({
           backgroundSize: `${CELL_SIZE}px ${CELL_SIZE}px`,
         }}
       >
-        {/* Stage - fixed at top, not draggable */}
+        {/* Stage - fixed at top center, not draggable */}
         {stage.width > 0 && stage.height > 0 && (
           <div
-            className="absolute left-0 top-0 flex cursor-default items-center justify-center rounded-b border-2 border-amber-500/50 bg-amber-600/80 text-amber-100"
+            className="absolute flex cursor-default items-center justify-center rounded-b border-2 border-amber-500/50 bg-amber-600/80 text-amber-100"
             style={{
-              left: 2,
+              left: Math.max(2, (width - stage.width * CELL_SIZE) / 2),
               top: 2,
               width: stage.width * CELL_SIZE - 4,
               height: stage.height * CELL_SIZE - 4,
