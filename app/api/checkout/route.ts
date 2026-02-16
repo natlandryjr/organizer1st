@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { SeatStatus } from "@prisma/client";
 
 const PLATFORM_FEE_PERCENT = 0.01; // 1%
+const PLATFORM_FEE_CENTS_PER_TICKET = 50; // $0.50 per ticket
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 const DEFAULT_PRICE_CENTS = 5000; // $50 fallback when no ticket type
 
@@ -148,7 +149,9 @@ export async function POST(request: NextRequest) {
     }
 
     const totalAmountCents = Math.max(0, subtotalCents - discountCents);
-    const applicationFeeAmount = Math.round(totalAmountCents * PLATFORM_FEE_PERCENT);
+    const feeFromPercent = Math.round(totalAmountCents * PLATFORM_FEE_PERCENT);
+    const feeFromFlat = PLATFORM_FEE_CENTS_PER_TICKET * quantity;
+    const applicationFeeAmount = Math.max(feeFromPercent, feeFromFlat);
 
     const session = await stripe.checkout.sessions.create(
       {

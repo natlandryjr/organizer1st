@@ -67,7 +67,7 @@ export default function RootLayout({
                 <ul className="space-y-2 text-sm text-zinc-500">
                   <li><Link href="/#how-it-works" className="hover:text-zinc-300">How It Works</Link></li>
                   <li><Link href="/demo" className="hover:text-zinc-300">Demo</Link></li>
-                  <li><Link href="/help" className="hover:text-zinc-300">Help</Link></li>
+                  <li><Link href="/faq" className="hover:text-zinc-300">FAQ</Link></li>
                 </ul>
               </div>
               {/* Account links */}

@@ -18,6 +18,7 @@ type Booking = {
   id: string;
   attendeeName: string;
   attendeeEmail: string;
+  manageToken?: string | null;
   createdAt: string;
   seats: Seat[];
   emailSent?: boolean;
@@ -163,6 +164,25 @@ function BookingSuccessContent() {
           </ul>
         </div>
       </div>
+
+      {/* Manage tickets link */}
+      {booking.manageToken && (
+        <div className="glass-card p-5">
+          <h3 className="mb-2 text-sm font-medium text-zinc-300">Manage your tickets anytime</h3>
+          <p className="mb-4 text-sm text-zinc-500">
+            View, re-download, or transfer your tickets — no login required.
+          </p>
+          <Link
+            href={`/tickets/${booking.manageToken}`}
+            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 px-5 py-2.5 font-semibold text-white shadow-lg shadow-primary-500/20 hover:opacity-95"
+          >
+            Open manage link
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+          </Link>
+        </div>
+      )}
 
       {/* What's next card */}
       <div className="glass-card p-5">

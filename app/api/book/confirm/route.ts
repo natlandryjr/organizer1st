@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { randomBytes } from "crypto";
 import Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
 import { SeatStatus } from "@prisma/client";
 import { sendEmail, isEmailConfigured } from "@/lib/email";
 import { generateQrDataUrl } from "@/lib/qrcode";
+
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
 export async function POST(request: NextRequest) {
   try {
@@ -156,10 +159,12 @@ export async function POST(request: NextRequest) {
         );
       }
 
+      const manageToken = randomBytes(32).toString("hex");
       const newBooking = await tx.booking.create({
         data: {
           attendeeName: name,
           attendeeEmail: email,
+          manageToken,
         },
       });
 
@@ -231,6 +236,13 @@ export async function POST(request: NextRequest) {
       <img src="${qrDataUrl}" alt="Ticket QR Code" width="220" height="220" style="display:block;margin:0 auto;" />
     </div>
     <p style="margin:16px 0 0;font-size:0.75rem;color:#9ca3af;">Save this email or take a screenshot to show at the door.</p>
+    ${booking.manageToken ? `
+    <div style="margin-top:24px;padding:16px;background:#eff6ff;border-radius:8px;border:1px solid #bfdbfe;">
+      <p style="margin:0 0 8px;font-size:0.875rem;font-weight:600;color:#1e40af;">Manage your tickets anytime</p>
+      <p style="margin:0 0 12px;font-size:0.8rem;color:#3b82f6;">View, re-download, or transfer your tickets — no login required.</p>
+      <a href="${BASE_URL}/tickets/${booking.manageToken}" style="display:inline-block;padding:10px 20px;background:#2563eb;color:#fff!important;text-decoration:none;border-radius:6px;font-weight:600;font-size:0.875rem;">Open manage link</a>
+    </div>
+    ` : ""}
   </div>
 </body>
 </html>`;

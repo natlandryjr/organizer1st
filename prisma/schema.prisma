@@ -182,6 +182,7 @@ model Booking {
   id            String    @id @default(cuid())
   attendeeName  String
   attendeeEmail String
+  manageToken   String?   @unique // Magic link token for "Manage your tickets" - no login required
   createdAt     DateTime  @default(now())
   checkedInAt   DateTime? // When attendee was scanned at check-in
   seats         Seat[]

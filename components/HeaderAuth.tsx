@@ -33,10 +33,10 @@ export function HeaderAuth() {
       {user ? (
         <>
           <Link
-            href="/help"
+            href="/faq"
             className="text-sm font-medium text-zinc-400 transition-colors hover:text-zinc-200"
           >
-            Help
+            FAQ
           </Link>
           <Link
             href="/dashboard"
