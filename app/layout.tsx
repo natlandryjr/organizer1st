@@ -30,15 +30,12 @@ export default function RootLayout({
         <LocaleProvider>
           <header className="sticky top-0 z-40 border-b border-zinc-800/60 bg-zinc-950/70 backdrop-blur-xl backdrop-saturate-150 pt-[env(safe-area-inset-top)]">
             <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-              <a href="/" className="group flex items-center gap-2.5 transition-colors">
+              <a href="/" className="group flex items-center transition-colors">
                 <img
                   src="/favicon.png"
                   alt="Organizer1st"
                   className="h-8 w-8 rounded-lg object-contain transition-opacity group-hover:opacity-90"
                 />
-                <span className="text-lg font-semibold tracking-tight text-zinc-50 transition-colors group-hover:text-primary-400">
-                  Organizer1st
-                </span>
               </a>
               <div className="flex items-center gap-3">
                 <LanguageSelector />

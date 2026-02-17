@@ -13,6 +13,7 @@ import {
   UsersIcon,
   BrandIcon,
 } from "./HomeIcons";
+import { OrganizerAudienceSection } from "./OrganizerAudienceSection";
 
 type Event = {
   id: string;
@@ -62,6 +63,8 @@ export function HomeContent({ events }: { events: Event[] }) {
           </div>
         </div>
       </section>
+
+      <OrganizerAudienceSection />
 
       {/* 2. How It Works */}
       <section id="how-it-works" className="scroll-mt-24">
@@ -174,7 +177,7 @@ export function HomeContent({ events }: { events: Event[] }) {
               <Link href="/login" className="underline hover:text-primary-100">
                 {t.logInDemo}
               </Link>{" "}
-              (demo@organizer1st.com / Demo1234!) to edit events, manage attendees, and explore the dashboard.
+              {t.tryItOutSuffix}
             </p>
           </div>
           <h2 className="mb-8 text-3xl font-bold tracking-tight text-zinc-50">
